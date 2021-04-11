@@ -80,9 +80,6 @@ class _ChnagePasswordScreenState extends State<ChangePasswordScreen> {
                       child: Column(
                         children: <Widget>[
                           Container(
-                            color: textFormColor,
-
-                            //height: 50,
                             child: TextFormField(
                               enabled: !_isLoading,
                               focusNode: _oldPinFocusNode,
@@ -97,9 +94,6 @@ class _ChnagePasswordScreenState extends State<ChangePasswordScreen> {
                               decoration: InputDecoration(
                                   labelText: 'Old password',
                                   counterText: "",
-                                  contentPadding:
-                                      EdgeInsets.symmetric(horizontal: 12),
-                                  border: InputBorder.none,
                                   prefixIcon: Padding(
                                     padding: EdgeInsets.all(0.0),
                                     child: Icon(
@@ -123,8 +117,6 @@ class _ChnagePasswordScreenState extends State<ChangePasswordScreen> {
                             ),
                           ),
                           Container(
-                            color: textFormColor,
-                            //height: 50,
                             margin: EdgeInsets.only(top: 15),
                             child: TextFormField(
                               enabled: !_isLoading,
@@ -141,10 +133,6 @@ class _ChnagePasswordScreenState extends State<ChangePasswordScreen> {
                               },
                               decoration: InputDecoration(
                                 labelText: 'New Password',
-                                counterText: "",
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 12),
-                                border: InputBorder.none,
                                 prefixIcon: Padding(
                                   padding: EdgeInsets.all(0.0),
                                   child: Icon(
@@ -169,8 +157,6 @@ class _ChnagePasswordScreenState extends State<ChangePasswordScreen> {
                             ),
                           ),
                           Container(
-                              color: textFormColor,
-                              //height: 50,
                               margin: EdgeInsets.only(top: 15),
                               child: TextFormField(
                                 enabled: !_isLoading,
@@ -187,7 +173,6 @@ class _ChnagePasswordScreenState extends State<ChangePasswordScreen> {
                                       EdgeInsets.symmetric(horizontal: 12),
                                   border: InputBorder.none,
                                   labelText: 'Confirm password',
-                                  counterText: "",
                                   prefixIcon: Padding(
                                     padding: EdgeInsets.all(0.0),
                                     child: Icon(
@@ -216,12 +201,13 @@ class _ChnagePasswordScreenState extends State<ChangePasswordScreen> {
                     Container(
                       width: MediaQuery.of(context).size.width,
                       padding: const EdgeInsets.only(top: 15),
-                      child: ElevatedButton(                       
+                      child: ElevatedButton(
                         child: Padding(
                           padding: bottonPadding,
                           child: Text(
                             'Change Password',
-                            style: bottonTextStyle.copyWith(fontSize: 16),
+                            style: bottonTextStyle.copyWith(
+                                fontSize: 16, color: Colors.white),
                           ),
                         ),
                         onPressed: _isLoading

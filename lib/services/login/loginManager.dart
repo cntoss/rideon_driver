@@ -52,7 +52,7 @@ class LoginManger {
   Future<bool> register(User user) async {
     var result;
     _notifier.value = LoginStates.loading;
-    await Future.delayed(Duration(seconds: 3), () {
+    await Future.delayed(Duration(seconds: 1), () {
       // todo : hit login ko api
       result = true;
     });

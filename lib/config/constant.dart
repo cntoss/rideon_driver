@@ -7,6 +7,7 @@ const String passwordValidationError =
 const String phoneValidationError = "Phone number must have exactly 10 digits ";
 const String defaultloginError =
     'Woopsie! Login Failed, please retry in a minute or so.';
+const otpEmptyError = "OTP must be 6 digit number";
 
 const Color lightAccent = Color(0xffFFEE58);
 const Color lightAccentComplimentary = Color(0xffFFaa58);
@@ -14,7 +15,6 @@ const Color darkAccent = Color(0xff11998e);
 const Color lightBG = Color(0xffffffff);
 const Color darkBG = Colors.black;
 const Color textColor = Colors.black45;
-const Color textFormColor = Color(0xff0acf8a);
 const Color cardColor = Color(0xfffefaf0);
 const TextStyle errorStyle = TextStyle(color: Colors.redAccent, fontSize: 16);
 const TextStyle normalStyle = TextStyle(color: textColor, fontSize: 16);
@@ -24,6 +24,14 @@ const TextStyle title = const TextStyle(
     color: Color(0x8a000000),
     fontFamily: "Roboto",
     fontSize: 28.0,
+    fontWeight: FontWeight.w400,
+    decoration: TextDecoration.none);
+
+const TextStyle subTitle = const TextStyle(
+    inherit: false,
+    color: Color(0x8a000000),
+    fontFamily: "Lato",
+    fontSize: 25.0,
     fontWeight: FontWeight.w400,
     decoration: TextDecoration.none);
 

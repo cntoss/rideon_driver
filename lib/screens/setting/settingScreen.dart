@@ -26,11 +26,6 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             customCard(
                 child: customRow(
-                    icon: Icon(Icons.attach_money),
-                    title: 'Discount',
-                    subtitle: 'Refer and get discounts')),
-            customCard(
-                child: customRow(
               icon: Icon(Icons.language),
               title: 'Language',
             )),
@@ -41,10 +36,10 @@ class _SettingScreenState extends State<SettingScreen> {
             )),
             customCard(
                 child: customRow(
-              icon: Icon(Icons.money),
+              icon: Icon(Icons.attach_money),
               title: 'Add Payment',
             )),
-             customCard(
+            customCard(
                 child: customRow(
               icon: Icon(Icons.money),
               title: 'Refer And Earn',
@@ -133,40 +128,23 @@ class ProfileBox extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
-              width: MediaQuery.of(context).size.width/3.5,
+              width: MediaQuery.of(context).size.width / 3.5,
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-                child:  user.image.isNullOrEmpty()
-                      ? Image.asset('assets/logo_mini.png')
-                      : NetworkImage(user.image),                     
-                ),
+                child: user.image.isNullOrEmpty()
+                    ? Image.asset('assets/logo_mini.png')
+                    : NetworkImage(user.image),
+              ),
             ),
-            
             Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
                       padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            user.name ?? '',
-                            style: Theme.of(context).textTheme.headline5,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.redAccent,
-                                    border: Border(),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Text('unverified'),
-                                )),
-                          )
-                        ],
+                      child: Text(
+                        user.name ?? '',
+                        style: Theme.of(context).textTheme.headline5,
                       )),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
@@ -182,23 +160,41 @@ class ProfileBox extends StatelessWidget {
                           ),
                         ),
                         Text('Lalitpur'),
-                           Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[350],
-                                    border: Border(),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal:4.0),
-                                  child: Row(children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[350],
+                                  border: Border(),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: Row(
+                                  children: [
                                     Text('0.0'),
-                                    Icon(Icons.star, color: Colors.yellow,)
-                                  ],),
-                                )),
-                          )
+                                    Icon(
+                                      Icons.star,
+                                      color: Colors.yellow,
+                                    )
+                                  ],
+                                ),
+                              )),
+                        )
                       ],
                     ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.redAccent,
+                            border: Border(),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text('unverified'),
+                        )),
                   ),
                   TextButton(
                       style: TextButton.styleFrom(

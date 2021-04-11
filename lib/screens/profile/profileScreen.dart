@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:rideon_driver/config/constant.dart';
 import 'package:rideon_driver/models/profile/documentModel.dart';
 import 'package:rideon_driver/models/user/userModel.dart';
+import 'package:rideon_driver/screens/profile/addFIle.dart';
 import 'package:rideon_driver/screens/profile/changePasswordScreen.dart';
+import 'package:rideon_driver/screens/profile/profileEditScreen.dart';
 import 'package:rideon_driver/services/utils/extension.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -52,38 +54,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
               itemBuilder: (BuildContext context, index) {
                 return Opacity(
                   opacity: (10 - index) / 10.toDouble(),
-                  child: Card(
-                    color: cardColor,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  documents[index].title,
-                                  style: title.copyWith(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                if (documents[index].stage ==
-                                    DocumentStage.done)
-                                  Text('Completed'),
-                                if (documents[index].stage ==
-                                    DocumentStage.redy)
-                                  Text('Ready to begin'),
-                                if (documents[index].stage ==
-                                    DocumentStage.attention)
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  AddFileScreen(documents[index])));
+                    },
+                    child: Card(
+                      color: cardColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Text(
-                                    'Needs your attentions',
-                                    style: TextStyle(color: Colors.red),
+                                    documents[index].title,
+                                    style: title.copyWith(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
                                   ),
-                              ],
-                            ),
-                            Icon(Icons.arrow_forward_ios_outlined)
-                          ]),
+                                  if (documents[index].stage ==
+                                      DocumentStage.done)
+                                    Text('Completed'),
+                                  if (documents[index].stage ==
+                                      DocumentStage.redy)
+                                    Text('Ready to begin'),
+                                  if (documents[index].stage ==
+                                      DocumentStage.attention)
+                                    Text(
+                                      'Needs your attentions',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                ],
+                              ),
+                              Icon(Icons.arrow_forward_ios_outlined)
+                            ]),
+                      ),
                     ),
                   ),
                 );
@@ -131,77 +142,85 @@ class ProfileBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        color: cardColor,
-        elevation: 1,
-        shape: RoundedRectangleBorder(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(8.0),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width / 3.5,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: user.image.isNullOrEmpty()
-                    ? Image.asset('assets/logo_mini.png')
-                    : NetworkImage(user.image),
-              ),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ProfileEditScreen(user: user)));
+      },
+      child: Card(
+          color: cardColor,
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(8.0),
             ),
-            Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                      child: Text(
-                        user.name ?? '',
-                        style: Theme.of(context).textTheme.headline5,
-                      )),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Row(
-                      children: [
-                        Text(user.phone ?? ''),
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Container(
-                            color: Colors.black54,
-                            height: 20,
-                            width: 2,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.grey[350],
-                                  border: Border(),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: Row(
-                                  children: [
-                                    Text('0.0'),
-                                    Icon(
-                                      Icons.star,
-                                      color: Colors.yellow,
-                                    )
-                                  ],
-                                ),
-                              )),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width / 3.5,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: user.image.isNullOrEmpty()
+                      ? Image.asset('assets/logo_mini.png')
+                      : NetworkImage(user.image),
+                ),
               ),
-            )
-          ],
-        ));
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                        padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                        child: Text(
+                          user.name ?? '',
+                          style: Theme.of(context).textTheme.headline5,
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Row(
+                        children: [
+                          Text(user.phone ?? ''),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Container(
+                              color: Colors.black54,
+                              height: 20,
+                              width: 2,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[350],
+                                    border: Border(),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4.0),
+                                  child: Row(
+                                    children: [
+                                      Text('0.0'),
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.yellow,
+                                      )
+                                    ],
+                                  ),
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          )),
+    );
   }
 }

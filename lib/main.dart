@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         //home: UserService().isLogin ? HomePageWrapper() : SplashScreen(),
 
         // initialRoute: UserService().isWorkThrough ? '/login' : '/',
-        initialRoute: '/slash',
+        initialRoute: '/login',
         routes: {
           // '/': (context) => SplashScreen(),
           '/slash': (context) => SplashScreen(),

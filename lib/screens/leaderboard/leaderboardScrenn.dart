@@ -116,7 +116,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   return ListTile(
                     leading: CircleAvatar(
                       backgroundImage: leaderBoard[index].image.isNullOrEmpty()
-                          ? AssetImage('assets/logo.png')
+                          ? AssetImage('assets/avatar.png')
                           : NetworkImage(leaderBoard[index].image),
                       radius: 20,
                     ),

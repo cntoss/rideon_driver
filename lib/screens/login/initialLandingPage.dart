@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:rideon_driver/config/constant.dart';
+import 'package:rideon_driver/models/user/userModel.dart';
 import 'package:rideon_driver/screens/login/loginPage.dart';
-import 'package:rideon_driver/screens/login/registerscreen.dart';
+import 'package:rideon_driver/screens/registration/documents_process.dart';
+import 'package:rideon_driver/screens/registration/registration_select.dart';
 import 'package:rideon_driver/screens/widgets/appButton.dart';
 import 'package:rideon_driver/services/helper/locationServiceEnable.dart';
 
@@ -54,11 +56,11 @@ class _InitialLandingPageState extends State<InitialLandingPage> {
                     AppButton().appButton(
                       text: 'Get Started',
                       color: Colors.red,
-                      onTap: () {
+                      onpressed: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Registration(),
+                              builder: (context) => DocumentProcessScreen(user:User()),
                             ));
                       },
                     ),
