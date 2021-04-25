@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:rideon_driver/config/constant.dart';
 import 'package:rideon_driver/models/user/userModel.dart';
 import 'package:rideon_driver/screens/registration/documents_process.dart';
-import 'package:rideon_driver/screens/widgets/appButton.dart';
-import 'package:rideon_driver/screens/widgets/customCard.dart';
+import 'package:rideon_driver/widget/appButton.dart';
+import 'package:rideon_driver/widget/customCard.dart';
 import 'package:rideon_driver/services/login/loginManager.dart';
 import 'package:rideon_driver/services/utils/extension.dart';
 

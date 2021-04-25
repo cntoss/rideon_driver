@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rideon_driver/config/constant.dart';
 import 'package:rideon_driver/models/user/userModel.dart';
 import 'package:rideon_driver/screens/profile/add_single_field.dart';
-import 'package:rideon_driver/screens/widgets/customCard.dart';
+import 'package:rideon_driver/widget/customCard.dart';
 import 'package:rideon_driver/services/utils/extension.dart';
 
 enum FieldType { email, phone }

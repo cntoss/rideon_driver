@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rideon_driver/config/constant.dart';
 import 'package:rideon_driver/screens/registration/registration_select.dart';
-import 'package:rideon_driver/screens/widgets/appButton.dart';
-import 'package:rideon_driver/screens/widgets/customCard.dart';
+import 'package:rideon_driver/widget/appButton.dart';
+import 'package:rideon_driver/widget/customCard.dart';
 import 'package:rideon_driver/services/utils/extension.dart';
 import 'package:rideon_driver/services/login/loginManager.dart';
 

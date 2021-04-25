@@ -22,7 +22,8 @@ class UserService {
         (Route<dynamic> route) => false);
 
     print('Removing User');
-    _box.delete(hkUser);
+    //_box.delete(hkUser);
+    _box.clear();
   }
 
   /*  List<User> getUsers() {

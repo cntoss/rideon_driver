@@ -10,6 +10,7 @@ class AppConfig {
 
   DateFormat dateWithTime = DateFormat('MMM dd, yyyy   hh:mm a');
   DateFormat dateWithoutTime = DateFormat('MMM dd, yyyy');
+  DateFormat dateOnlyTime = DateFormat('hh:mm a');
 }
 
 const hiveBoxName = 'rideOnBox';
@@ -17,6 +18,7 @@ const hiveBoxName = 'rideOnBox';
 const htSavedAddress = 1;
 const htAddressType = 2;
 const htlnModel = 3;
+const htNotification = 4;
 
 const hkEncryptionKey = "hkKey";
 const hkUser = 'user';
@@ -24,6 +26,7 @@ const hkIsLoging = 'isLogin';
 const hkIsWorkThrough = 'isWorkThrough';
 const hkAddressType = 'addressType';
 const hkTheme = 'theme';
+const hkNotification = 'notification';
 
 const googleAPIKey = 'AIzaSyA8yyji0eV-0jkNXg-yFhIRXUa5bIChX78';
 const double CAMERA_ZOOM = 15;

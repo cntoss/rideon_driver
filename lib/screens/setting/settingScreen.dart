@@ -39,6 +39,11 @@ class _SettingScreenState extends State<SettingScreen> {
               icon: Icon(Icons.attach_money),
               title: 'Add Payment',
             )),
+             customCard(
+                child: customRow(
+              icon: Icon(Icons.history),
+              title: 'Trip History',
+            )),
             customCard(
                 child: customRow(
               icon: Icon(Icons.money),

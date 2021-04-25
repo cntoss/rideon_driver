@@ -4,6 +4,7 @@ import 'package:rideon_driver/screens/leaderboard/leaderboardScrenn.dart';
 import 'package:rideon_driver/screens/home/customNavigationButton.dart';
 import 'package:rideon_driver/screens/home/homePage.dart';
 import 'package:rideon_driver/screens/income/incomeDashboard.dart';
+import 'package:rideon_driver/screens/notification/notification.dart';
 import 'package:rideon_driver/screens/setting/settingScreen.dart';
 import 'package:rideon_driver/widget/network_sensitive.dart';
 
@@ -40,37 +41,44 @@ class _HomePageWrapperState extends State<HomePageWrapper> {
     TextStyle _incomeStyle =
         TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
     return NetworkSensitive(
-          child: Stack(
-          children: [
-      Scaffold(
-        appBar: AppBar(
-          backgroundColor: cardColor,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Spacer(flex: 1),
-              Text('On Duty', style: _incomeStyle),
-              Switch(
-                activeColor: Colors.green,
-                inactiveThumbColor: Colors.grey,
-                activeTrackColor: Colors.blue,
-                inactiveTrackColor: Colors.lightBlue[200],
-                value: _isOnline,
-                onChanged: (value) {
-                  setState(() {
-                    _isOnline = value;
-                  });
-                },
+      child: Stack(
+        children: [
+          Scaffold(
+            appBar: AppBar(
+              backgroundColor: cardColor,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Spacer(flex: 1),
+                  Text(_isOnline ? 'On Duty' : 'Off Duty', style: _incomeStyle),
+                  Switch(
+                    activeColor: Colors.redAccent,
+                    inactiveThumbColor: Colors.grey,
+                    activeTrackColor: Colors.blue,
+                    inactiveTrackColor: Colors.black12,
+                    value: _isOnline,
+                    onChanged: (value) {
+                      setState(() {
+                        _isOnline = value;
+                      });
+                    },
+                  ),
+                  Spacer(
+                    flex: 1,
+                  )
+                ],
               ),
-              Spacer(
-                flex: 1,
-              )
-            ],
-          ),
-        ),
-        body: Stack(
-          children: [
-           /*  Positioned(
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.notifications_active, color: Theme.of(context).iconTheme.color),
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => NotificationScreen())),
+                )
+              ],
+            ),
+            body: Stack(
+              children: [
+                /*  Positioned(
               top: MediaQuery.of(context).padding.top,
               width: MediaQuery.of(context).size.width,
               child: Card(
@@ -103,28 +111,28 @@ class _HomePageWrapperState extends State<HomePageWrapper> {
                 ),
               ),
             ), */
-            pageContent(),
-            Positioned(
-              bottom: 0,
-              child: CustomBottomNavigation(
-                selectedItemColor: Colors.red,
-                bgColor: cardColor,
-                navItems: {
-                  "Home": Icons.home,
-                  "LeaderBoard": Icons.emoji_events,
-                  "Earning": Icons.attach_money_rounded,
-                  "Profile": Icons.person
-                },
-                onTabChange: (page) {
-                  _pageController.jumpToPage(page);
-                },
-              ),
-            )
-          ],
-        ),
+                pageContent(),
+                Positioned(
+                  bottom: 0,
+                  child: CustomBottomNavigation(
+                    selectedItemColor: Colors.red,
+                    bgColor: cardColor,
+                    navItems: {
+                      "Home": Icons.home,
+                      "LeaderBoard": Icons.emoji_events,
+                      "Earning": Icons.attach_money_rounded,
+                      "Profile": Icons.person
+                    },
+                    onTabChange: (page) {
+                      _pageController.jumpToPage(page);
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
       ),
-          ],
-        ),
     );
   }
 

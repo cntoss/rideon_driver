@@ -7,7 +7,6 @@ import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideon_driver/config/appConfig.dart';
 import 'package:rideon_driver/models/googleModel/locationModel.dart';
-import 'package:rideon_driver/screens/home/ride_request.dart';
 import 'package:rideon_driver/services/firebase/firebaseService.dart';
 import 'package:rideon_driver/services/google/geocodingService.dart';
 import 'package:rideon_driver/models/googleModel/GeocodingModel.dart';
@@ -25,7 +24,8 @@ class _HomePageState extends State<HomePage>
   LocationDetail locationDetail = LocationDetail();
   Completer<GoogleMapController> _controller = Completer();
   StreamSubscription<Position> _positionStreamSubscription;
-  BitmapDescriptor sourceIcon;
+  //this source icon is for representing current location
+  //BitmapDescriptor sourceIcon;
   Set<Marker> _markers = Set<Marker>();
 
   bool _loading = true;
@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     _getLocationDetail();
-    setSourceAndDestinationIcons();
+    //setSourceAndDestinationIcons();
   }
 
   @override
@@ -94,13 +94,13 @@ class _HomePageState extends State<HomePage>
     controller.animateCamera(CameraUpdate.newCameraPosition(cPosition));
   }
 
-  void setSourceAndDestinationIcons() async {
+  /* void setSourceAndDestinationIcons() async {
     BitmapDescriptor.fromAssetImage(
             ImageConfiguration(devicePixelRatio: 2.0), 'assets/location.png')
         .then((onValue) {
       sourceIcon = onValue;
     });
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -116,12 +116,12 @@ class _HomePageState extends State<HomePage>
         bearing: CAMERA_BEARING
       );
 
-    if (!_loading)
+   /*  if (!_loading)
       _markers.add(Marker(
           markerId: MarkerId('current'),
           position: LatLng(currentLocation.latitude, currentLocation.longitude),
           icon: sourceIcon));
-
+ */
     TextStyle _incomeStyle =
         TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
 
@@ -178,12 +178,7 @@ class _HomePageState extends State<HomePage>
                     children: [
                       InkWell(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RideRequest(
-                                        sourceDetail: locationDetail,
-                                        destinationDetail: locationDetail)));
+                           
                           },
                           child: Text('Income', style: _incomeStyle)),
                       Text(

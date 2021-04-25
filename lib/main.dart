@@ -1,12 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'services/firebase/firebaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:rideon_driver/common/theme.dart';
-import 'package:rideon_driver/models/pooling/counterModel.dart';
 import 'package:rideon_driver/screens/home/homePageWarper.dart';
 import 'package:rideon_driver/screens/login/loginwrapper.dart';
-import 'package:rideon_driver/screens/splashScreen.dart';
+import 'package:rideon_driver/screens/splash/splash.dart';
 import 'package:rideon_driver/services/helper/hiveService.dart';
 import 'package:rideon_driver/services/login/loginManager.dart';
 import 'package:rideon_driver/services/theme/theme_provider.dart';
@@ -19,16 +19,13 @@ import 'services/connectivity/connectivity_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //FirebaseService().initFirebase();
+  FirebaseService().initFirebase();
   await Firebase.initializeApp();
   await HiveService().initHive();
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(
-          create: (context) => PassengerCounter(),
-        ),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),       
         Provider(
           create: (_) => LoginManger(),
         )

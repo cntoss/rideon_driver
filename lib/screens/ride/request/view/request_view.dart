@@ -7,26 +7,31 @@ import 'package:rideon_driver/maps/web_service/distance.dart' as distance;
 import 'dart:async';
 import 'package:rideon_driver/models/googleModel/GeocodingModel.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:rideon_driver/models/notification/request_notification.dart';
+import 'package:rideon_driver/services/helper/zoomCalculate.dart';
 
-class RideRequest extends StatefulWidget {
-  RideRequest({this.sourceDetail, this.destinationDetail});
-  final LocationDetail sourceDetail;
-  final LocationDetail destinationDetail;
+class RideRequestPage extends StatefulWidget {
+  RideRequestPage({this.notificationData});
+  final NotificationData notificationData;
   @override
   State<StatefulWidget> createState() =>
-      RideRequestState(this.sourceDetail, this.destinationDetail);
+      RideRequestState(this.notificationData);
 }
 
-class RideRequestState extends State<RideRequest> {
-  RideRequestState(this.sourceDetail, this.destinationDetail);
+class RideRequestState extends State<RideRequestPage> {
+  RideRequestState(this._notificationData);
+  NotificationData _notificationData;
+
   LocationDetail sourceDetail;
   LocationDetail destinationDetail;
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> _markers = Set<Marker>();
+
 // for my drawn routes on the map
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints;
+
 // for my custom marker pins
   BitmapDescriptor sourceIcon;
   BitmapDescriptor destinationIcon;
@@ -41,6 +46,8 @@ class RideRequestState extends State<RideRequest> {
   void initState() {
     super.initState();
     // create an instance of Location
+    sourceDetail = _notificationData.fromLocation;
+    destinationDetail = _notificationData.toLocation;
     polylinePoints = PolylinePoints();
     currentLocation = Position.fromMap({
       "latitude": sourceDetail.geometry.location.lat,
@@ -78,8 +85,8 @@ class RideRequestState extends State<RideRequest> {
 
   void setInitialLocation() async {
     destinationLocation = Position.fromMap({
-      "latitude": widget.destinationDetail.geometry.location.lat,
-      "longitude": widget.destinationDetail.geometry.location.lng
+      "latitude": destinationDetail.geometry.location.lat,
+      "longitude": destinationDetail.geometry.location.lng
     });
   }
 
@@ -93,13 +100,11 @@ class RideRequestState extends State<RideRequest> {
             (sourceDetail.geometry.location.lng +
                     destinationDetail.geometry.location.lng) /
                 2),
-        zoom:
-            10 /*  ZoomCalculate().getZoom(
+        zoom: ZoomCalculate().getZoom(
             sourceDetail.geometry.location.lat,
             sourceDetail.geometry.location.lng,
             destinationDetail.geometry.location.lat,
-            destinationDetail.geometry.location.lng) */
-        ,
+            destinationDetail.geometry.location.lng),
         tilt: CAMERA_TILT,
         bearing: CAMERA_BEARING);
 
@@ -122,11 +127,11 @@ class RideRequestState extends State<RideRequest> {
               onMapCreated: (GoogleMapController controller) {
                 //controller.setMapStyle(Utils.mapStyles);
                 _controller.complete(controller);
-                // my map has completed being created;
-                // i'm ready to show the pins on the map
                 showPinsOnMap();
               }),
-          Positioned(
+
+          ///TODO: disable back button
+          /*  Positioned(
             top: MediaQuery.of(context).padding.top,
             left: 20,
             child: IconButton(
@@ -138,26 +143,11 @@ class RideRequestState extends State<RideRequest> {
               ),
               onPressed: () => Navigator.pop(context),
             ),
-          ),
-          FutureBuilder(
-            future: getDistance(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              } else if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.data != null)
-                return MapPinPillComponent(
-                  distance: snapshot.data,
-                  fromLocation: widget.sourceDetail,
-                  toLocation: widget.destinationDetail,
-                );
-              else
-                return Center(
-                    child: Text(
-                  'Unable to find route',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                ));
-            },
+          ), */
+          //make future loader here if distance and time response is not
+          // coming from firebase nitifiation
+          MapPinPillComponent(
+            data: _notificationData,
           )
         ],
       ),
@@ -173,7 +163,7 @@ class RideRequestState extends State<RideRequest> {
     _markers.add(Marker(
         markerId: MarkerId('sourcePin'),
         infoWindow: InfoWindow(
-            title: sourceDetail.formattedAddress, snippet: 'Rideon map'),
+            title: sourceDetail.formattedAddress, snippet: 'rideon_driver map'),
         position: pinPosition,
         icon: sourceIcon));
     // destination pin
@@ -242,10 +232,8 @@ class RideRequestState extends State<RideRequest> {
 }
 
 class MapPinPillComponent extends StatefulWidget {
-  final String distance;
-  final LocationDetail fromLocation;
-  final LocationDetail toLocation;
-  MapPinPillComponent({this.fromLocation, this.toLocation, this.distance});
+  final NotificationData data;
+  MapPinPillComponent({this.data});
 
   @override
   _MapPinPillComponentState createState() => _MapPinPillComponentState();
@@ -297,7 +285,7 @@ class _MapPinPillComponentState extends State<MapPinPillComponent> {
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [Text('Anjali Maiya'), Text('Lorem Ipsom..')],
+                        children: [Text('Pyari Suntali'), Text('Damak, Jhapa')],
                       )
                     ],
                   ),
@@ -308,13 +296,15 @@ class _MapPinPillComponentState extends State<MapPinPillComponent> {
                     children: [
                       Icon(Icons.person_pin_circle),
                       Expanded(
-                          child: Text(widget.fromLocation.formattedAddress))
+                          child:
+                              Text(widget.data.fromLocation.formattedAddress))
                     ],
                   ),
                   Row(
                     children: [
                       Icon(Icons.pin_drop),
-                      Expanded(child: Text(widget.toLocation.formattedAddress))
+                      Expanded(
+                          child: Text(widget.data.toLocation.formattedAddress))
                     ],
                   ),
                   Padding(
@@ -330,7 +320,7 @@ class _MapPinPillComponentState extends State<MapPinPillComponent> {
                           children: [
                             Text('Distance'),
                             Text(
-                              widget.distance ?? '5.8 Km',
+                              widget.data.distance ?? '5.8 Km',
                               style: TextStyle(color: Colors.red, fontSize: 20),
                             )
                           ],
@@ -365,7 +355,7 @@ class _MapPinPillComponentState extends State<MapPinPillComponent> {
                       Icon(Icons.call),
                       //Spacer(flex: 1),
                       Padding(
-                        padding: const EdgeInsets.only(left:8.0),
+                        padding: const EdgeInsets.only(left: 8.0),
                         child: Text(
                           'Support',
                           style: TextStyle(fontWeight: FontWeight.bold),
@@ -378,9 +368,12 @@ class _MapPinPillComponentState extends State<MapPinPillComponent> {
                         width: 1,
                       ),
                       Spacer(flex: 1),
-                      Text(
-                        'Reject',
-                        style: TextStyle(color: Colors.red, fontSize: 20),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          'Reject',
+                          style: TextStyle(color: Colors.red, fontSize: 20),
+                        ),
                       ),
                       Spacer(
                         flex: 4,
@@ -392,7 +385,7 @@ class _MapPinPillComponentState extends State<MapPinPillComponent> {
                       child: Divider(height: 3, color: Colors.black45)),
                   ElevatedButton(
                     onPressed: () => {},
-                    child: Text('Accept rideon request'),
+                    child: Text('Accept rideon_driver request'),
                   )
                 ],
               ),

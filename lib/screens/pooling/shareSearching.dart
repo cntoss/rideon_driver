@@ -3,7 +3,7 @@ import 'package:rideon_driver/config/appConfig.dart';
 import 'package:rideon_driver/models/driverModel.dart';
 import 'package:rideon_driver/models/pooling/sharingModel.dart';
 import 'package:rideon_driver/screens/pooling/driver/driverProfile.dart';
-import 'package:rideon_driver/screens/widgets/customCard.dart';
+import 'package:rideon_driver/widget/customCard.dart';
 
 class CarShareSearching extends StatefulWidget {
   final SharingModel sharingModel;

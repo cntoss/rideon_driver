@@ -4,7 +4,7 @@ import 'package:rideon_driver/models/profile/documentModel.dart';
 import 'package:rideon_driver/models/user/userModel.dart';
 import 'package:rideon_driver/screens/login/loginPage.dart';
 import 'package:rideon_driver/screens/profile/addFIle.dart';
-import 'package:rideon_driver/screens/widgets/appButton.dart';
+import 'package:rideon_driver/widget/appButton.dart';
 
 class DocumentProcessScreen extends StatefulWidget {
   final User user;

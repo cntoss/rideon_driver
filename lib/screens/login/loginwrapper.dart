@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rideon_driver/screens/home/homePageWarper.dart';
 import 'package:rideon_driver/screens/login/loginPage.dart';
-import 'package:rideon_driver/screens/splashScreen.dart';
+//import 'package:rideon_driver/screens/splash/view/splash_view.dart';
 import 'package:rideon_driver/services/login/loginManager.dart';
 
 class LoginWrapper extends StatelessWidget {
@@ -12,7 +12,7 @@ class LoginWrapper extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: loginManager.currentState,
       builder: (BuildContext context,LoginStates currentState, Widget child) {
-      return  currentState==LoginStates.loggedIn ? HomePageWrapper(): SplashScreen() ;
+      return  currentState==LoginStates.loggedIn ? HomePageWrapper(): LoginPage() ;
       },
     );
   }

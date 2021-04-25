@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rideon_driver/config/constant.dart';
-import 'package:rideon_driver/screens/widgets/customCard.dart';
+import 'package:rideon_driver/widget/customCard.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override

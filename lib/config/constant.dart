@@ -22,7 +22,7 @@ const TextStyle normalStyle = TextStyle(color: textColor, fontSize: 16);
 const TextStyle title = const TextStyle(
     inherit: false,
     color: Color(0x8a000000),
-    fontFamily: "Roboto",
+    fontFamily: "Poppins",
     fontSize: 28.0,
     fontWeight: FontWeight.w400,
     decoration: TextDecoration.none);
@@ -30,7 +30,7 @@ const TextStyle title = const TextStyle(
 const TextStyle subTitle = const TextStyle(
     inherit: false,
     color: Color(0x8a000000),
-    fontFamily: "Lato",
+    fontFamily: "Poppins",
     fontSize: 25.0,
     fontWeight: FontWeight.w400,
     decoration: TextDecoration.none);

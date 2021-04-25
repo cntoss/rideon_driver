@@ -3,8 +3,8 @@ import 'package:rideon_driver/config/constant.dart';
 import 'package:rideon_driver/models/user/userModel.dart';
 import 'package:rideon_driver/screens/login/loginPage.dart';
 import 'package:rideon_driver/screens/registration/documents_process.dart';
-import 'package:rideon_driver/screens/registration/registration_select.dart';
-import 'package:rideon_driver/screens/widgets/appButton.dart';
+import 'package:rideon_driver/widget/appButton.dart';
+import 'package:rideon_driver/services/firebase/firebaseService.dart';
 import 'package:rideon_driver/services/helper/locationServiceEnable.dart';
 
 class InitialLandingPage extends StatefulWidget {
@@ -17,6 +17,12 @@ class _InitialLandingPageState extends State<InitialLandingPage> {
   void initState() {
     super.initState();
     LocationService().getLocation();
+    FirebaseService().getFirebaseToken();
+  }
+
+  getss() async {
+    var token = await FirebaseService().getFirebaseToken();
+    print(token);
   }
 
   @override
@@ -49,7 +55,9 @@ class _InitialLandingPageState extends State<InitialLandingPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('Welcome to Rideon Driver', style: title),
-                SizedBox(height: MediaQuery.of(context).size.height/4,),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 4,
+                ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -60,7 +68,8 @@ class _InitialLandingPageState extends State<InitialLandingPage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DocumentProcessScreen(user:User()),
+                              builder: (context) =>
+                                  DocumentProcessScreen(user: User()),
                             ));
                       },
                     ),

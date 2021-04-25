@@ -3,7 +3,7 @@ import 'package:rideon_driver/config/appConfig.dart';
 import 'package:rideon_driver/maps/google_maps_place_picker.dart';
 import 'package:rideon_driver/models/googleModel/GeocodingModel.dart';
 import 'package:rideon_driver/screens/maps/routeScreen.dart';
-import 'package:rideon_driver/screens/widgets/animatedPin.dart';
+import 'package:rideon_driver/widget/animatedPin.dart';
 import 'package:rideon_driver/services/google/placeService.dart';
 import 'package:rideon_driver/config/constant.dart';
 
