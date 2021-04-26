@@ -42,21 +42,10 @@ class CustomDialog {
                 top: MediaQuery.of(context).orientation == Orientation.portrait
                     ? 10
                     : 5),
-            child: Container(
+            child: Image.asset(
+              'assets/logo.png',
               height: 80,
-              width: 80,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade200),
-                shape: BoxShape.circle,
-                color: Colors.white,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.asset(
-                  'assets/logo.png',
-                  fit: BoxFit.scaleDown,
-                ),
-              ),
+              fit: BoxFit.scaleDown,
             ),
           ),
         ),

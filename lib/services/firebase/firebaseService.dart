@@ -51,6 +51,7 @@ class FirebaseService {
     CustomDialog().showCustomDialog(title: title, content: content, actions: [
       CustomDialog().dialogButton(
         text: 'CLOSE',
+        color: Colors.black12,
         onPressed: () {
           Navigator.pop(AppConfig.navigatorKey.currentState.context);
         },

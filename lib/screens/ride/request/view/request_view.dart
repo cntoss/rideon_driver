@@ -115,6 +115,7 @@ class RideRequestState extends State<RideRequestPage> {
               myLocationEnabled: true,
               compassEnabled: false,
               tiltGesturesEnabled: false,
+              zoomControlsEnabled: false,
               markers: _markers,
               polylines: Set<Polyline>.of(polylines.values),
               mapType: MapType.normal,
@@ -152,6 +153,18 @@ class RideRequestState extends State<RideRequestPage> {
         ],
       ),
     );
+  }
+
+  void showRequestBox() async {
+    bool result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MapPinPillComponent(
+          data: _notificationData,
+        ),
+      ),
+    );
+    if (!result) Navigator.pop(context);
   }
 
   void showPinsOnMap() {
@@ -239,10 +252,45 @@ class MapPinPillComponent extends StatefulWidget {
   _MapPinPillComponentState createState() => _MapPinPillComponentState();
 }
 
-class _MapPinPillComponentState extends State<MapPinPillComponent> {
+class _MapPinPillComponentState extends State<MapPinPillComponent>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+
+  //Animation animation;
+
+  bool _isExpand = false;
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..addListener(() {
+        setState(() {});
+      });
+    controller.repeat(reverse: true);
+
+   /*  controller =
+        AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    animation = Tween(begin: 0.0, end: 20.0).animate(controller)
+      ..addListener(() {
+        setState(() {
+          // Change here any Animation object value.
+        });
+      }); */
+  }
+
+  @override
+  void dispose() {
+    controller.stop();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
+    Future.delayed(
+        const Duration(seconds: 100), () => {Navigator.pop(context, false)});
     return Align(
       alignment: Alignment.bottomCenter,
       child: Card(
@@ -258,10 +306,17 @@ class _MapPinPillComponentState extends State<MapPinPillComponent> {
               children: [
                 IconButton(
                     padding: EdgeInsets.all(0),
-                    icon: Icon(Icons.keyboard_arrow_down),
-                    onPressed: () {}),
+                    icon: _isExpand
+                        ? Icon(Icons.keyboard_arrow_up)
+                        : Icon(Icons.keyboard_arrow_down),
+                    onPressed: () {
+                      setState(() {
+                        _isExpand = !_isExpand;
+                      });
+                    }),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
+                  padding:
+                      const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
                   child: Text(
                     'You got a ride request',
                     style: title,
@@ -269,130 +324,151 @@ class _MapPinPillComponentState extends State<MapPinPillComponent> {
                 )
               ],
             ),
-            Container(
-              color: Colors.white,
-              width: width,
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircleAvatar(
-                          child: Icon(Icons.person, size: 30),
-                          foregroundColor: Colors.grey[300],
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [Text('Pyari Suntali'), Text('Damak, Jhapa')],
-                      )
-                    ],
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Divider(height: 3, color: Colors.black45)),
-                  Row(
-                    children: [
-                      Icon(Icons.person_pin_circle),
-                      Expanded(
-                          child:
-                              Text(widget.data.fromLocation.formattedAddress))
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.pin_drop),
-                      Expanded(
-                          child: Text(widget.data.toLocation.formattedAddress))
-                    ],
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Divider(height: 3, color: Colors.black45)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Spacer(flex: 1),
-                      Flexible(
-                        flex: 10,
-                        child: Column(
+            LinearProgressIndicator(
+              value: controller.value,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
+            ),
+            _isExpand
+                ? _acceptButton()
+                : Container(
+                    color: Colors.white,
+                    width: width,
+                    child: Column(
+                      children: [
+                        Row(
                           children: [
-                            Text('Distance'),
-                            Text(
-                              widget.data.distance ?? '5.8 Km',
-                              style: TextStyle(color: Colors.red, fontSize: 20),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CircleAvatar(
+                                child: Icon(Icons.person, size: 30),
+                                foregroundColor: Colors.grey[300],
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Pyari Suntali'),
+                                Text('Damak, Jhapa')
+                              ],
                             )
                           ],
                         ),
-                      ),
-                      Container(
-                        height: 30,
-                        color: Colors.black,
-                        width: 1,
-                      ),
-                      Column(
-                        children: [
-                          Text('Fare'),
-                          Text(
-                            'Rs 100',
-                            style: TextStyle(color: Colors.red, fontSize: 20),
-                          )
-                        ],
-                      ),
-                      Spacer(
-                        flex: 1,
-                      )
-                    ],
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Divider(height: 3, color: Colors.black45)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Spacer(flex: 4),
-                      Icon(Icons.call),
-                      //Spacer(flex: 1),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          'Support',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Divider(height: 3, color: Colors.black45),
                         ),
-                      ),
-                      Spacer(flex: 1),
-                      Container(
-                        height: 20,
-                        color: Colors.black,
-                        width: 1,
-                      ),
-                      Spacer(flex: 1),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          'Reject',
-                          style: TextStyle(color: Colors.red, fontSize: 20),
+                        Row(
+                          children: [
+                            Icon(Icons.person_pin_circle),
+                            Expanded(
+                                child: Text(
+                                    widget.data.fromLocation.formattedAddress))
+                          ],
                         ),
-                      ),
-                      Spacer(
-                        flex: 4,
-                      )
-                    ],
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Divider(height: 3, color: Colors.black45)),
-                  ElevatedButton(
-                    onPressed: () => {},
-                    child: Text('Accept rideon_driver request'),
+                        Row(
+                          children: [
+                            Icon(Icons.pin_drop),
+                            Expanded(
+                                child: Text(
+                                    widget.data.toLocation.formattedAddress))
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Divider(height: 3, color: Colors.black45),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Spacer(flex: 1),
+                            Flexible(
+                              flex: 10,
+                              child: Column(
+                                children: [
+                                  Text('Distance'),
+                                  Text(
+                                    widget.data.distance ?? '5.8 Km',
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 20),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              height: 30,
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                            Column(
+                              children: [
+                                Text('Fare'),
+                                Text(
+                                  'Rs 100',
+                                  style: TextStyle(
+                                      color: Colors.red, fontSize: 20),
+                                )
+                              ],
+                            ),
+                            Spacer(
+                              flex: 1,
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Divider(height: 3, color: Colors.black45),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Spacer(flex: 4),
+                            Icon(Icons.call),
+                            //Spacer(flex: 1),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                'Support',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Spacer(flex: 1),
+                            Container(
+                              height: 20,
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                            Spacer(flex: 1),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: Text(
+                                'Reject',
+                                style:
+                                    TextStyle(color: Colors.red, fontSize: 20),
+                              ),
+                            ),
+                            Spacer(
+                              flex: 4,
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Divider(height: 3, color: Colors.black45),
+                        ),
+                        _acceptButton()
+                      ],
+                    ),
                   )
-                ],
-              ),
-            )
           ],
         ),
       ),
+    );
+  }
+
+  Widget _acceptButton() {
+    return ElevatedButton(
+      onPressed: () => {Navigator.pop(context, true)},
+      child: Text('Accept rideon_driver request'),
     );
   }
 }
