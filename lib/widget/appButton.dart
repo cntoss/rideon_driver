@@ -3,8 +3,8 @@ import 'package:rideon_driver/config/constant.dart';
 
 class AppButton {
   Widget appButton(
-      {@required String text,
-      @required VoidCallback onpressed,
+      {required String text,
+      required VoidCallback onpressed,
       bool small = false,
       Color textColor = Colors.white,
       Color color = Colors.blue}) {

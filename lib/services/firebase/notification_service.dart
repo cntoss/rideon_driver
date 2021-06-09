@@ -13,10 +13,20 @@ class NotificationService {
   }
 
   List<OfflineNotification> getSavedNotifications() {
-    List<OfflineNotification> notifications = List<OfflineNotification>();
+    List<OfflineNotification> notifications = <OfflineNotification>[];
     List<dynamic> result =
-        _box.get(hkNotification, defaultValue: List<OfflineNotification>());
+        _box.get(hkNotification, defaultValue: <OfflineNotification>[]);
     notifications = result.cast();
     return notifications.take(50).toList();
+  }
+
+  void deleteAllNotification() {
+    _box.delete(hkNotification);
+  }
+
+  void deleteNotification(OfflineNotification notification) {
+    List<OfflineNotification?> notifications = getSavedNotifications();
+    notifications.removeWhere((element) => element!.date == notification.date);
+    _box.put(hkNotification, notifications);
   }
 }

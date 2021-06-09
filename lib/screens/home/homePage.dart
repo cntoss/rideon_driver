@@ -20,10 +20,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
-  Position currentLocation;
-  LocationDetail locationDetail = LocationDetail();
+  Position? currentLocation;
+  LocationDetail? locationDetail = LocationDetail();
   Completer<GoogleMapController> _controller = Completer();
-  StreamSubscription<Position> _positionStreamSubscription;
+  StreamSubscription<Position>? _positionStreamSubscription;
   //this source icon is for representing current location
   //BitmapDescriptor sourceIcon;
   Set<Marker> _markers = Set<Marker>();
@@ -39,7 +39,9 @@ class _HomePageState extends State<HomePage>
 
   @override
   void dispose() {
-    _positionStreamSubscription.cancel();
+    if (_positionStreamSubscription != null) {
+      _positionStreamSubscription!.cancel();
+    }
     super.dispose();
   }
 
@@ -52,24 +54,19 @@ class _HomePageState extends State<HomePage>
       });
       locationDetail = await GeocodingService().getPlaceDetailFromLocation(
           LocationModel(
-              lat: currentLocation.latitude, lng: currentLocation.longitude));
-      _getStreamPoint();
+              lat: currentLocation!.latitude, lng: currentLocation!.longitude));
+      //_getStreamPoint();
     } else {
       Future.delayed(Duration.zero, () => _getLocationDetail());
     }
-
-     String id = await FirebaseService().getFirebaseToken();
-    print(id);
   }
 
   _getStreamPoint() {
     if (_positionStreamSubscription == null) {
-      final positionStream = Geolocator.getPositionStream(
-        intervalDuration: Duration(seconds: 30)
-        
-      );
+      final positionStream =
+          Geolocator.getPositionStream(intervalDuration: Duration(seconds: 30));
       _positionStreamSubscription = positionStream.handleError((error) {
-        _positionStreamSubscription.cancel();
+        _positionStreamSubscription!.cancel();
         _positionStreamSubscription = null;
       }).listen((position) {
         if (!mounted) return;
@@ -87,7 +84,7 @@ class _HomePageState extends State<HomePage>
       zoom: CAMERA_ZOOM,
       tilt: CAMERA_TILT,
       bearing: CAMERA_BEARING,
-      target: LatLng(currentLocation.latitude, currentLocation.longitude),
+      target: LatLng(currentLocation!.latitude, currentLocation!.longitude),
     );
     print('Location updated');
     final GoogleMapController controller = await _controller.future;
@@ -106,17 +103,16 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    CameraPosition _initialCameraPosition;
+    late CameraPosition _initialCameraPosition;
     var width = MediaQuery.of(context).size.width;
-    if (!_loading)
+    if (!_loading && currentLocation != null)
       _initialCameraPosition = CameraPosition(
-        target: LatLng(currentLocation.latitude, currentLocation.longitude),
-        zoom: CAMERA_ZOOM,
-        tilt: CAMERA_TILT,
-        bearing: CAMERA_BEARING
-      );
+          target: LatLng(currentLocation!.latitude, currentLocation!.longitude),
+          zoom: CAMERA_ZOOM,
+          tilt: CAMERA_TILT,
+          bearing: CAMERA_BEARING);
 
-   /*  if (!_loading)
+    /*  if (!_loading)
       _markers.add(Marker(
           markerId: MarkerId('current'),
           position: LatLng(currentLocation.latitude, currentLocation.longitude),
@@ -130,7 +126,7 @@ class _HomePageState extends State<HomePage>
         _loading
             ? Center(
                 child: CircularProgressIndicator(backgroundColor: Colors.white))
-            : GoogleMap(              
+            : GoogleMap(
                 mapType: MapType.normal,
                 myLocationEnabled: true,
                 compassEnabled: true,
@@ -177,9 +173,7 @@ class _HomePageState extends State<HomePage>
                   child: Column(
                     children: [
                       InkWell(
-                          onTap: () {
-                           
-                          },
+                          onTap: () {},
                           child: Text('Income', style: _incomeStyle)),
                       Text(
                         'Rs 0',

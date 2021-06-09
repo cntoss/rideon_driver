@@ -17,12 +17,12 @@ class SavedAddressModelAdapter extends TypeAdapter<SavedAddressModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return SavedAddressModel(
-      id: fields[0] as String,
-      type: fields[1] as AddressType,
-      placeId: fields[2] as String,
-      location: fields[3] as LnModel,
-      locationName: fields[4] as String,
-      detail: fields[5] as String,
+      id: fields[0] as String?,
+      type: fields[1] as AddressType?,
+      placeId: fields[2] as String?,
+      location: fields[3] as LnModel?,
+      locationName: fields[4] as String?,
+      detail: fields[5] as String?,
     );
   }
 

@@ -18,21 +18,21 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
-  TextEditingController _phoneNumberCOntroller;
-  TextEditingController _nameCotroler,
+  late TextEditingController _phoneController,
+      _nameCotroler,
       _emergencyPhoneController,
+      _dateController,
       _emailController;
-  String gender;
+  String? gender;
   final _formKey = GlobalKey<FormState>();
-  FocusNode _phoneFocus, _emergencyFocus, _emailFocus;
-  DateTime _selectedDate;
-  TextEditingController _dateController = TextEditingController();
+  late FocusNode _phoneFocus, _emergencyFocus, _emailFocus;
+  DateTime? _selectedDate;
 
   @override
   void initState() {
     super.initState();
     _nameCotroler = TextEditingController(text: "");
-    _phoneNumberCOntroller = TextEditingController(text: "");
+    _phoneController = TextEditingController(text: "");
     _emailController = TextEditingController(text: "");
     _emergencyPhoneController = TextEditingController(text: "");
     _dateController = TextEditingController(text: "");
@@ -46,7 +46,7 @@ class _RegistrationState extends State<Registration> {
   @override
   void dispose() {
     _nameCotroler.dispose();
-    _phoneNumberCOntroller.dispose();
+    _phoneController.dispose();
     _dateController.dispose();
     _emergencyPhoneController.dispose();
     _emailController.dispose();
@@ -80,7 +80,7 @@ class _RegistrationState extends State<Registration> {
                             _phoneFocus.requestFocus();
                           },
                           validator: (value) {
-                            if (value.isEmpty)
+                            if (value == null)
                               return 'Enter Full Name';
                             else if (value.length < 5 && !value.contains(' '))
                               return "Enter Valid Name";
@@ -99,7 +99,7 @@ class _RegistrationState extends State<Registration> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
-                          controller: _phoneNumberCOntroller,
+                          controller: _phoneController,
                           focusNode: _phoneFocus,
                           onFieldSubmitted: (v) {
                             _phoneFocus.unfocus();
@@ -108,6 +108,7 @@ class _RegistrationState extends State<Registration> {
                           keyboardType: TextInputType.phone,
                           maxLength: 10,
                           validator: (s) {
+                            if(s == null) return 'Please enter valid phone number';
                             return s.isValidPhone()
                                 ? null
                                 : "${s.trim().length > 0 ? s + " is not a" : "Please enter a"} valid phone number.";
@@ -131,7 +132,7 @@ class _RegistrationState extends State<Registration> {
                           },
                           controller: _dateController,
                           validator: (s) {
-                            if (s.isEmpty)
+                            if (s == null)
                               return 'Please select date of birth';
                             else
                               return null;
@@ -154,6 +155,7 @@ class _RegistrationState extends State<Registration> {
                           },
                           keyboardType: TextInputType.phone,
                           validator: (s) {
+                            if(s == null) return 'Please enter valid phone';
                             return s.isValidPhone()
                                 ? null
                                 : "${s.trim().length > 0 ? s + " is not a" : "Please enter a"} valid phone number.";
@@ -177,6 +179,7 @@ class _RegistrationState extends State<Registration> {
                             _emailFocus.unfocus();
                           },
                           validator: (s) {
+                            if(s== null) return 'Please enter valid email';
                             return s.isValidEmail()
                                 ? null
                                 : "${s.trim().length > 0 ? s + " is not a" : "Please enter a"} valid email address.";
@@ -214,8 +217,8 @@ class _RegistrationState extends State<Registration> {
                               activeColor: Colors.black,
                               onChanged: (x) {
                                 setState(() {
-                                  _gender = x;
-                                });
+                                  _gender = x as Gender;
+                                }); 
                               }),
                           new Text(
                             'Male',
@@ -227,7 +230,7 @@ class _RegistrationState extends State<Registration> {
                               groupValue: _gender,
                               onChanged: (x) {
                                 setState(() {
-                                  _gender = x;
+                                  _gender = x as Gender;
                                 });
                               }),
                           new Text(
@@ -242,7 +245,7 @@ class _RegistrationState extends State<Registration> {
                             groupValue: _gender,
                             onChanged: (x) {
                               setState(() {
-                                _gender = x;
+                                _gender = x as Gender;
                               });
                             },
                           ),
@@ -280,13 +283,13 @@ class _RegistrationState extends State<Registration> {
                                 text: "Continue",
                                 onpressed: () async {
                                   FocusScope.of(context).unfocus();
-                                  if (_formKey.currentState.validate()) {
-                                    _formKey.currentState.save();
+                                  if (_formKey.currentState!.validate()) {
+                                    _formKey.currentState!.save();
                                     _manager
                                         .register(User(
                                             id: 1,
                                             name: _nameCotroler.text,
-                                            phone: _phoneNumberCOntroller.text,
+                                            phone: _phoneController.text,
                                             email: _emailController.text,
                                             gender: 'male',
                                             paymentId: null,
@@ -312,18 +315,18 @@ class _RegistrationState extends State<Registration> {
 
   void showLoginFailMessage(context, manager) {
     Future.delayed(Duration(seconds: 1), () {
-      Scaffold.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(manager.errorText ?? defaultloginError)));
     });
   }
 
   _selectDate(BuildContext context) async {
-    DateTime newSelectedDate = await showDatePicker(
+    DateTime? newSelectedDate = await showDatePicker(
         context: context,
-        initialDate: _selectedDate != null ? _selectedDate : DateTime.now(),
+        initialDate: _selectedDate != null ? _selectedDate as DateTime : DateTime.now(),
         firstDate: DateTime(1910),
         lastDate: DateTime.now(),
-        builder: (BuildContext context, Widget child) {
+        builder: (BuildContext context, Widget? child) {
           return Theme(
             data: ThemeData.dark().copyWith(
               colorScheme: ColorScheme.dark(
@@ -335,14 +338,14 @@ class _RegistrationState extends State<Registration> {
               textTheme: TextTheme(bodyText2: TextStyle(color: Colors.blue)),
               dialogBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
             ),
-            child: child,
+            child: child!,
           );
         });
 
     if (newSelectedDate != null) {
       _selectedDate = newSelectedDate;
       _dateController
-        ..text = DateFormat.yMMMd().format(_selectedDate)
+        ..text = DateFormat.yMMMd().format(_selectedDate!)
         ..selection = TextSelection.fromPosition(TextPosition(
             offset: _dateController.text.length,
             affinity: TextAffinity.upstream));

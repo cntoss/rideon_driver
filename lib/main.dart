@@ -19,13 +19,13 @@ import 'services/connectivity/connectivity_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseService().initFirebase();
   await Firebase.initializeApp();
+  FirebaseService().initFirebase();
   await HiveService().initHive();
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),       
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         Provider(
           create: (_) => LoginManger(),
         )
@@ -41,7 +41,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
- 
   @override
   void dispose() {
     Hive.close();
@@ -51,9 +50,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return StreamProvider<ConnectivityStatus>(
+      initialData: ConnectivityStatus.Offline,
       create: (context) =>
           ConnectivityService().connectionStatusController.stream,
-          child: MaterialApp(
+      child: MaterialApp(
         navigatorKey: AppConfig.navigatorKey,
         title: 'Ride On',
         debugShowCheckedModeBanner: false,

@@ -6,10 +6,10 @@ import 'package:rideon_driver/services/helper/userService.dart';
 enum LoginStates { loggedIn, loggedOut, loading, error }
 
 class LoginManger {
-  ValueNotifier<LoginStates> _notifier;
-  String _errorMessage;
+  late ValueNotifier<LoginStates> _notifier;
+  String? _errorMessage;
 
-  String get errorText => _errorMessage;
+  String get errorText => _errorMessage!;
 
   ValueNotifier<LoginStates> get currentState {
     LoginStates state;
@@ -17,11 +17,11 @@ class LoginManger {
       state = LoginStates.loggedIn;
     else
       state = LoginStates.loggedOut;
-    _notifier ??= ValueNotifier(state);
+    _notifier = ValueNotifier(state);
     return _notifier;
   }
 
-  login({@required String phone, @required String password}) async {
+  login({required String phone, required String password}) async {
     var result;
     _notifier.value = LoginStates.loading;
     await Future.delayed(Duration(seconds: 3), () {

@@ -8,7 +8,7 @@ class DriverProfile extends StatelessWidget {
   DriverProfile(this.driverModel);
   @override
   Widget build(BuildContext context) {
-    int rides =  driverModel.rides ?? 3 ;
+    int rides =  driverModel.rides  ;
     return Scaffold(
       appBar: AppBar(title: Text("Driver Details")),
       body: Stack(
@@ -20,8 +20,8 @@ class DriverProfile extends StatelessWidget {
                         child: Container(
               child: CircleAvatar(
                 backgroundImage: driverModel.profilePicture == null
-                    ? AssetImage('assets/avatar.png')
-                    : NetworkImage(driverModel.profilePicture),
+                    ? AssetImage('assets/avatar.png') as ImageProvider
+                    : NetworkImage(driverModel.profilePicture!),
                 radius: 50,
               ),
             ),
@@ -45,13 +45,13 @@ class DriverProfile extends StatelessWidget {
                   ],
                 ), */
                 customRow(
-                    Icon(Icons.star), driverModel.rating.toString() ?? '3.0'),
+                    Icon(Icons.star), driverModel.rating.toString() ),
                 customRow(
                     driverModel.music
                         ? Icon(Icons.music_note_outlined)
                         : Icon(Icons.music_off_outlined),
                     'Its all about the playlist!'),
-                driverModel.petAllow?? false
+                driverModel.petAllow
                     ? customRow(
                         Icon(Icons.pets), 'You can bring you pets with you')
                     : customRow(Icon(Icons.no_transfer_outlined),

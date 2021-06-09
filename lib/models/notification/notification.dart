@@ -13,9 +13,8 @@ part 'notification.g.dart';
 //final notificationToJson(List<Notification> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 @HiveType(typeId: htNotification)
 class OfflineNotification extends HiveObject {
-  
   @HiveField(0)
-  String id;
+  String? id;
   @HiveField(1)
   String title;
   @HiveField(2)
@@ -23,15 +22,15 @@ class OfflineNotification extends HiveObject {
   @HiveField(3)
   DateTime date;
   @HiveField(4)
-  String image;
+  String? image;
   @HiveField(5)
-  String link;
+  String? link;
 
-   OfflineNotification({
+  OfflineNotification({
     this.id,
-    this.title,
-    this.description,
-    this.date,
+    required this.title,
+    required this.description,
+    required this.date,
     this.image,
     this.link,
   });

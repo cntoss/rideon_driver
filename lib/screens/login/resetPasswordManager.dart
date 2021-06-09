@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 enum ResetStates { loading, success, error, idle }
 
 class ResetPasswordManger {
-  String _errorMessage;
-  String get error => _errorMessage;
+  String? _errorMessage;
+  String get error => _errorMessage as String;
   ValueNotifier<ResetStates> _notifier = ValueNotifier<ResetStates>(
       ResetStates.idle);
 

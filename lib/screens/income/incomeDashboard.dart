@@ -135,7 +135,7 @@ class _IncomeDashboardState extends State<IncomeDashboard> {
 
 class Trip {
   String day;
-  int trip;
+  int? trip;
   Trip(this.day, this.trip);
 }
 

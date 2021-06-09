@@ -1,31 +1,33 @@
-library google_maps_webservice.places.src;
-
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import 'core.dart';
 import 'utils.dart';
+
+part 'places.g.dart';
 
 const _placesUrl = '/place';
 const _nearbySearchUrl = '/nearbysearch/json';
 const _textSearchUrl = '/textsearch/json';
 const _detailsSearchUrl = '/details/json';
 const _autocompleteUrl = '/autocomplete/json';
+const _photoUrl = '/photo';
 const _queryAutocompleteUrl = '/queryautocomplete/json';
 
 /// https://developers.google.com/places/web-service/
 class GoogleMapsPlaces extends GoogleWebService {
   GoogleMapsPlaces({
-    String apiKey,
-    String baseUrl,
-    Client httpClient,
-    Map<String, dynamic> apiHeaders,
+    String? apiKey,
+    String? baseUrl,
+    Client? httpClient,
+    Map<String, String>? apiHeaders,
   }) : super(
           apiKey: apiKey,
           baseUrl: baseUrl,
-          url: _placesUrl,
+          apiPath: _placesUrl,
           httpClient: httpClient,
           apiHeaders: apiHeaders,
         );
@@ -33,18 +35,22 @@ class GoogleMapsPlaces extends GoogleWebService {
   Future<PlacesSearchResponse> searchNearbyWithRadius(
     Location location,
     num radius, {
-    String type,
-    String keyword,
-    String language,   
-    String name,
-    String pagetoken,
+    String? type,
+    String? keyword,
+    String? language,
+    PriceLevel? minprice,
+    PriceLevel? maxprice,
+    String? name,
+    String? pagetoken,
   }) async {
     final url = buildNearbySearchUrl(
       location: location,
       language: language,
       radius: radius,
       type: type,
-      keyword: keyword,     
+      keyword: keyword,
+      minprice: minprice,
+      maxprice: maxprice,
       name: name,
       pagetoken: pagetoken,
     );
@@ -54,18 +60,22 @@ class GoogleMapsPlaces extends GoogleWebService {
   Future<PlacesSearchResponse> searchNearbyWithRankBy(
     Location location,
     String rankby, {
-    String type,
-    String keyword,
-    String language,    
-    String name,
-    String pagetoken,
+    String? type,
+    String? keyword,
+    String? language,
+    PriceLevel? minprice,
+    PriceLevel? maxprice,
+    String? name,
+    String? pagetoken,
   }) async {
     final url = buildNearbySearchUrl(
       location: location,
       language: language,
       type: type,
       rankby: rankby,
-      keyword: keyword,     
+      keyword: keyword,
+      minprice: minprice,
+      maxprice: maxprice,
       name: name,
       pagetoken: pagetoken,
     );
@@ -74,14 +84,15 @@ class GoogleMapsPlaces extends GoogleWebService {
 
   Future<PlacesSearchResponse> searchByText(
     String query, {
-    Location location,
-    num radius,
-   
-    bool opennow,
-    String type,
-    String pagetoken,
-    String language,
-    String region,
+    Location? location,
+    num? radius,
+    PriceLevel? minprice,
+    PriceLevel? maxprice,
+    bool opennow = false,
+    String? type,
+    String? pagetoken,
+    String? language,
+    String? region,
   }) async {
     final url = buildTextSearchUrl(
       query: query,
@@ -89,17 +100,22 @@ class GoogleMapsPlaces extends GoogleWebService {
       language: language,
       region: region,
       type: type,
-      radius: radius,     
+      radius: radius,
+      minprice: minprice,
+      maxprice: maxprice,
       pagetoken: pagetoken,
+      opennow: opennow,
     );
     return _decodeSearchResponse(await doGet(url, headers: apiHeaders));
   }
 
-  Future<PlacesDetailsResponse> getDetailsByPlaceId(String placeId,
-      {String sessionToken,
-      List<String> fields,
-      String language,
-      String region}) async {
+  Future<PlacesDetailsResponse> getDetailsByPlaceId(
+    String placeId, {
+    String? sessionToken,
+    List<String> fields = const [],
+    String? language,
+    String? region,
+  }) async {
     final url = buildDetailsUrl(
       placeId: placeId,
       sessionToken: sessionToken,
@@ -113,9 +129,9 @@ class GoogleMapsPlaces extends GoogleWebService {
   @deprecated
   Future<PlacesDetailsResponse> getDetailsByReference(
     String reference, {
-    String sessionToken,
-    List<String> fields,
-    String language,
+    String? sessionToken,
+    List<String> fields = const [],
+    String? language,
   }) async {
     final url = buildDetailsUrl(
       reference: reference,
@@ -128,16 +144,16 @@ class GoogleMapsPlaces extends GoogleWebService {
 
   Future<PlacesAutocompleteResponse> autocomplete(
     String input, {
-    String sessionToken,
-    num offset,
-    Location origin,
-    Location location,
-    num radius,
-    String language,
-    List<String> types,
-    List<Component> components,
-    bool strictbounds,
-    String region,
+    String? sessionToken,
+    num? offset,
+    Location? origin,
+    Location? location,
+    num? radius,
+    String? language,
+    List<String> types = const [],
+    List<Component> components = const [],
+    bool strictbounds = false,
+    String? region,
   }) async {
     final url = buildAutocompleteUrl(
       sessionToken: sessionToken,
@@ -157,10 +173,10 @@ class GoogleMapsPlaces extends GoogleWebService {
 
   Future<PlacesAutocompleteResponse> queryAutocomplete(
     String input, {
-    num offset,
-    Location location,
-    num radius,
-    String language,
+    num? offset,
+    Location? location,
+    num? radius,
+    String? language,
   }) async {
     final url = buildQueryAutocompleteUrl(
       input: input,
@@ -173,14 +189,16 @@ class GoogleMapsPlaces extends GoogleWebService {
   }
 
   String buildNearbySearchUrl({
-    Location location,
-    num radius,
-    String type,
-    String keyword,
-    String language,
-    String name,
-    String rankby,
-    String pagetoken,
+    Location? location,
+    num? radius,
+    String? type,
+    String? keyword,
+    String? language,
+    PriceLevel? minprice,
+    PriceLevel? maxprice,
+    String? name,
+    String? rankby,
+    String? pagetoken,
   }) {
     if (radius != null && rankby != null) {
       throw ArgumentError(
@@ -195,141 +213,315 @@ class GoogleMapsPlaces extends GoogleWebService {
           "If 'rankby=distance' is specified, then one or more of 'keyword', 'name', or 'type' is required.");
     }
 
-    final params = {
-      'location': location,
-      'radius': radius,
-      'language': language,
-      'type': type,
-      'keyword': keyword,     
-      'name': name,
-      'rankby': rankby,
-      'pagetoken': pagetoken,
-    };
+    final params = <String, String>{};
 
-    if (apiKey != null) {
-      params.putIfAbsent('key', () => apiKey);
+    if (location != null) {
+      params['location'] = location.toString();
     }
 
-    return '$url$_nearbySearchUrl?${buildQuery(params)}';
+    if (keyword != null) {
+      params['keyword'] = keyword;
+    }
+
+    if (name != null) {
+      params['name'] = name;
+    }
+
+    if (rankby != null) {
+      params['rankby'] = rankby;
+    }
+
+    if (minprice != null) {
+      params['minprice'] = minprice.index.toString();
+    }
+
+    if (maxprice != null) {
+      params['maxprice'] = maxprice.index.toString();
+    }
+
+    if (type != null) {
+      params['type'] = type;
+    }
+
+    if (pagetoken != null) {
+      params['pagetoken'] = pagetoken;
+    }
+
+    if (language != null) {
+      params['language'] = language;
+    }
+
+    if (radius != null) {
+      params['radius'] = radius.toString();
+    }
+
+    if (apiKey != null) {
+      params['key'] = apiKey!;
+    }
+    return url
+        .replace(
+          path: '${url.path}$_nearbySearchUrl',
+          queryParameters: params,
+        )
+        .toString();
   }
 
   String buildTextSearchUrl({
-    String query,
-    Location location,
-    num radius,
-    String type,
-    String pagetoken,
-    String language,
-    String region,
+    required String query,
+    Location? location,
+    num? radius,
+    PriceLevel? minprice,
+    PriceLevel? maxprice,
+    bool opennow = false,
+    String? type,
+    String? pagetoken,
+    String? language,
+    String? region,
   }) {
-    final params = {
-      'query': query != null ? Uri.encodeComponent(query) : null,
-      'language': language,
-      'region': region,
-      'location': location,
-      'radius': radius,      
-      'type': type,
-      'pagetoken': pagetoken,
+    final params = <String, String>{
+      'query': query,
     };
 
-    if (apiKey != null) {
-      params.putIfAbsent('key', () => apiKey);
+    if (minprice != null) {
+      params['minprice'] = minprice.index.toString();
     }
 
-    return '$url$_textSearchUrl?${buildQuery(params)}';
+    if (maxprice != null) {
+      params['maxprice'] = maxprice.index.toString();
+    }
+
+    if (opennow) {
+      params['opennow'] = opennow.toString();
+    }
+
+    if (type != null) {
+      params['type'] = type;
+    }
+
+    if (pagetoken != null) {
+      params['pagetoken'] = pagetoken;
+    }
+
+    if (language != null) {
+      params['language'] = language;
+    }
+
+    if (region != null) {
+      params['region'] = region;
+    }
+
+    if (location != null) {
+      params['location'] = location.toString();
+    }
+
+    if (radius != null) {
+      params['radius'] = radius.toString();
+    }
+
+    if (apiKey != null) {
+      params['key'] = apiKey!;
+    }
+
+    return url
+        .replace(
+          path: '${url.path}$_textSearchUrl',
+          queryParameters: params,
+        )
+        .toString();
   }
 
   String buildDetailsUrl({
-    String placeId,
-    String reference,
-    String sessionToken,
-    String language,
-    List<String> fields,
-    String region,
+    String? placeId,
+    String? reference,
+    String? sessionToken,
+    String? language,
+    List<String> fields = const [],
+    String? region,
   }) {
     if (placeId != null && reference != null) {
       throw ArgumentError("You must supply either 'placeid' or 'reference'");
     }
 
-    final params = {
-      'placeid': placeId,
-      'reference': reference,
-      'language': language,
-      'region': region,
-    };
+    final params = <String, String>{};
 
-    if (fields?.isNotEmpty == true) {
+    if (placeId != null) {
+      params['placeid'] = placeId;
+    }
+
+    if (reference != null) {
+      params['reference'] = reference;
+    }
+
+    if (language != null) {
+      params['language'] = language;
+    }
+
+    if (region != null) {
+      params['region'] = region;
+    }
+
+    if (fields.isNotEmpty) {
       params['fields'] = fields.join(',');
     }
 
-    if (sessionToken != null) {
-      params.putIfAbsent('sessiontoken', () => sessionToken);
-    }
-
     if (apiKey != null) {
-      params.putIfAbsent('key', () => apiKey);
+      params['key'] = apiKey!;
     }
 
-    return '$url$_detailsSearchUrl?${buildQuery(params)}';
+    if (sessionToken != null) {
+      params['sessiontoken'] = sessionToken;
+    }
+
+    return url
+        .replace(
+          path: '${url.path}$_detailsSearchUrl',
+          queryParameters: params,
+        )
+        .toString();
   }
 
   String buildAutocompleteUrl({
-    String input,
-    String sessionToken,
-    num offset,
-    Location origin,
-    Location location,
-    num radius,
-    String language,
-    List<String> types,
-    List<Component> components,
-    bool strictbounds,
-    String region,
+    required String input,
+    String? sessionToken,
+    num? offset,
+    Location? origin,
+    Location? location,
+    num? radius,
+    String? language,
+    List<String> types = const [],
+    List<Component> components = const [],
+    bool strictbounds = false,
+    String? region,
   }) {
-    final params = {
-      'input': input != null ? Uri.encodeComponent(input) : null,
-      'language': language,
-      'origin': origin,
-      'location': location,
-      'radius': radius,
-      'types': types,
-      'components': components,
-      'strictbounds': strictbounds,
-      'offset': offset,
-      'region': region,
+    final params = <String, String>{
+      'input': input,
     };
+
+    if (language != null) {
+      params['language'] = language;
+    }
+
+    if (origin != null) {
+      params['origin'] = origin.toString();
+    }
+
+    if (location != null) {
+      params['location'] = location.toString();
+    }
+
+    if (radius != null) {
+      params['radius'] = radius.toString();
+    }
+
+    if (types.isNotEmpty) {
+      params['types'] = types.join('|');
+    }
+
+    if (components.isNotEmpty) {
+      params['components'] = components.join('|');
+    }
+
+    if (strictbounds) {
+      params['strictbounds'] = strictbounds.toString();
+    }
+
+    if (offset != null) {
+      params['offset'] = offset.toString();
+    }
+
+    if (region != null) {
+      params['region'] = region;
+    }
+
     if (apiKey != null) {
-      params.putIfAbsent('key', () => apiKey);
+      params['key'] = apiKey!;
     }
+
     if (sessionToken != null) {
-      params.putIfAbsent('sessiontoken', () => sessionToken);
+      params['sessiontoken'] = sessionToken;
     }
-    return '$url$_autocompleteUrl?${buildQuery(params)}';
+
+    return url
+        .replace(
+          path: '${url.path}$_autocompleteUrl',
+          queryParameters: params,
+        )
+        .toString();
   }
 
   String buildQueryAutocompleteUrl({
-    String input,
-    num offset,
-    Location location,
-    num radius,
-    String language,
+    required String input,
+    num? offset,
+    Location? location,
+    num? radius,
+    String? language,
   }) {
-    final params = {
-      'input': input != null ? Uri.encodeComponent(input) : null,
-      'language': language,
-      'location': location,
-      'radius': radius,
-      'offset': offset,
+    final params = <String, String>{
+      'input': input,
     };
 
-    if (apiKey != null) {
-      params.putIfAbsent('key', () => apiKey);
+    if (language != null) {
+      params['language'] = language;
     }
 
-    return '$url$_queryAutocompleteUrl?${buildQuery(params)}';
+    if (location != null) {
+      params['location'] = location.toString();
+    }
+
+    if (radius != null) {
+      params['radius'] = radius.toString();
+    }
+
+    if (offset != null) {
+      params['offset'] = offset.toString();
+    }
+
+    if (apiKey != null) {
+      params['key'] = apiKey!;
+    }
+
+    return url
+        .replace(
+          path: '${url.path}$_queryAutocompleteUrl',
+          queryParameters: params,
+        )
+        .toString();
   }
 
- PlacesSearchResponse _decodeSearchResponse(Response res) =>
+  String buildPhotoUrl({
+    required String photoReference,
+    int? maxWidth,
+    int? maxHeight,
+  }) {
+    if (maxWidth == null && maxHeight == null) {
+      throw ArgumentError("You must supply 'maxWidth' or 'maxHeight'");
+    }
+
+    final params = <String, String>{
+      'photoreference': photoReference,
+    };
+
+    if (maxWidth != null) {
+      params['maxwidth'] = maxWidth.toString();
+    }
+
+    if (maxHeight != null) {
+      params['maxheight'] = maxHeight.toString();
+    }
+
+    if (apiKey != null) {
+      params['key'] = apiKey!;
+    }
+
+    return url
+        .replace(
+          path: '${url.path}$_photoUrl',
+          queryParameters: params,
+        )
+        .toString();
+  }
+
+  PlacesSearchResponse _decodeSearchResponse(Response res) =>
       PlacesSearchResponse.fromJson(json.decode(res.body));
 
   PlacesDetailsResponse _decodeDetailsResponse(Response res) =>
@@ -339,285 +531,422 @@ class GoogleMapsPlaces extends GoogleWebService {
       PlacesAutocompleteResponse.fromJson(json.decode(res.body));
 }
 
-class PlacesSearchResponse extends GoogleResponseList<PlacesSearchResult> {
+@JsonSerializable()
+class PlacesSearchResponse extends GoogleResponseStatus {
+  @JsonKey(defaultValue: [])
+  final List<PlacesSearchResult> results;
+
   /// JSON html_attributions
+  @JsonKey(defaultValue: [])
   final List<String> htmlAttributions;
 
   /// JSON next_page_token
-  final String nextPageToken;
+  final String? nextPageToken;
 
-  PlacesSearchResponse(
-    String status,
-    String errorMessage,
-    List<PlacesSearchResult> results,
-    this.htmlAttributions,
+  PlacesSearchResponse({
+    required String status,
+    String? errorMessage,
+    this.results = const [],
+    this.htmlAttributions = const [],
     this.nextPageToken,
-  ) : super(
-          status,
-          errorMessage,
-          results,
-        );
+  }) : super(status: status, errorMessage: errorMessage);
 
-  factory PlacesSearchResponse.fromJson(Map json) => json != null
-      ? PlacesSearchResponse(
-          json['status'],
-          json['error_message'],
-          json['results']
-              ?.map((r) => PlacesSearchResult.fromJson(r))
-              ?.toList()
-              ?.cast<PlacesSearchResult>(),
-          json['html_attributions'] != null
-              ? (json['html_attributions'] as List).cast<String>()
-              : [],
-          json['next_page_token'])
-      : null;
+  factory PlacesSearchResponse.fromJson(Map<String, dynamic> json) =>
+      _$PlacesSearchResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$PlacesSearchResponseToJson(this);
 }
 
+@JsonSerializable()
 class PlacesSearchResult {
-  final String icon;
-  final Geometry geometry;
+  final String? icon;
+  final Geometry? geometry;
   final String name;
+
+  /// JSON opening_hours
+  final OpeningHoursDetail? openingHours;
+
+  @JsonKey(defaultValue: [])
+  final List<Photo> photos;
 
   /// JSON place_id
   final String placeId;
 
+  final String? scope;
+
   /// JSON alt_ids
+  @JsonKey(defaultValue: [])
   final List<AlternativeId> altIds;
 
+  /// JSON price_level
+  final PriceLevel? priceLevel;
+
+  final num? rating;
+
+  @JsonKey(defaultValue: [])
   final List<String> types;
 
-  final String vicinity;
+  final String? vicinity;
 
   /// JSON formatted_address
-  final String formattedAddress;
- 
-  final String id;
+  final String? formattedAddress;
+
+  /// JSON permanently_closed
+  @JsonKey(defaultValue: false)
+  final bool permanentlyClosed;
+
+  final String? id;
 
   final String reference;
 
-  PlacesSearchResult(
+  PlacesSearchResult({
+    this.id,
+    required this.reference,
+    required this.name,
+    required this.placeId,
+    this.formattedAddress,
+    this.photos = const [],
+    this.altIds = const [],
+    this.types = const [],
+    this.permanentlyClosed = false,
     this.icon,
     this.geometry,
-    this.name,
-    this.placeId,
-    this.altIds,
-    this.types,
+    this.openingHours,
+    this.scope,
+    this.priceLevel,
+    this.rating,
     this.vicinity,
-    this.formattedAddress,
-    this.id,
-    this.reference,
-  );
+  });
 
-  factory PlacesSearchResult.fromJson(Map json) => json != null
-      ? PlacesSearchResult(
-          json['icon'],
-          json['geometry'] != null ? Geometry.fromJson(json['geometry']) : null,
-          json['name'],         
-          json['place_id'],
-          json['alt_ids']
-              ?.map((a) => AlternativeId.fromJson(a))
-              ?.toList()
-              ?.cast<AlternativeId>(),         
-          json['vicinity'],
-          json['formatted_address'],
-          json['permanently_closed'],
-          json['id'],
-          json['reference'])
-      : null;
+  factory PlacesSearchResult.fromJson(Map<String, dynamic> json) =>
+      _$PlacesSearchResultFromJson(json);
+  Map<String, dynamic> toJson() => _$PlacesSearchResultToJson(this);
 }
 
+@JsonSerializable()
 class PlaceDetails {
   /// JSON address_components
+  @JsonKey(defaultValue: <AddressComponent>[])
   final List<AddressComponent> addressComponents;
 
   /// JSON adr_address
-  final String adrAddress;
+  final String? adrAddress;
 
   /// JSON formatted_address
-  final String formattedAddress;
+  final String? formattedAddress;
 
-  final String id;
+  /// JSON formatted_phone_number
+  final String? formattedPhoneNumber;
 
-  final String reference;
+  final String? id;
 
-  final String icon;
+  final String? reference;
+
+  final String? icon;
 
   final String name;
+
+  /// JSON opening_hours
+  final OpeningHoursDetail? openingHours;
+
+  @JsonKey(defaultValue: <Photo>[])
+  final List<Photo> photos;
+
   /// JSON place_id
   final String placeId;
 
-  final String scope;
+  /// JSON international_phone_number
+  final String? internationalPhoneNumber;
 
+  /// JSON price_level
+  final PriceLevel? priceLevel;
+
+  final num? rating;
+
+  final String? scope;
+
+  @JsonKey(defaultValue: <String>[])
   final List<String> types;
 
+  final String? url;
 
-  final String vicinity;
+  final String? vicinity;
 
   /// JSON utc_offset
-  final num utcOffset;
+  final num? utcOffset;
 
-  final Geometry geometry;
+  final String? website;
 
-  PlaceDetails(
-    this.addressComponents,
+  @JsonKey(defaultValue: <Review>[])
+  final List<Review> reviews;
+
+  final Geometry? geometry;
+
+  PlaceDetails({
     this.adrAddress,
-    this.formattedAddress,
+    required this.name,
+    required this.placeId,
+    this.utcOffset,
     this.id,
+    this.internationalPhoneNumber,
+    this.addressComponents = const [],
+    this.photos = const [],
+    this.types = const [],
+    this.reviews = const [],
+    this.formattedAddress,
+    this.formattedPhoneNumber,
     this.reference,
     this.icon,
-    this.name,
-    this.placeId,
+    this.rating,
+    this.openingHours,
+    this.priceLevel,
     this.scope,
-    this.types,
+    this.url,
     this.vicinity,
-    this.utcOffset,
+    this.website,
     this.geometry,
-  );
+  });
 
-  factory PlaceDetails.fromJson(Map json) => json != null
-      ? PlaceDetails(
-          json['address_components']
-              ?.map((addr) => AddressComponent.fromJson(addr))
-              ?.toList()
-              ?.cast<AddressComponent>(),
-          json['adr_address'],
-          json['formatted_address'],
-          json['id'],
-          json['reference'],
-          json['icon'],
-          json['name'],
-          json['place_id'],
-          json['scope'],
-          json['types'] != null ? (json['types'] as List)?.cast<String>() : [],
-          json['vicinity'],
-          json['utc_offset'],
-          json['geometry'] != null ? Geometry.fromJson(json['geometry']) : null)
-      : null;
+  factory PlaceDetails.fromJson(Map<String, dynamic> json) =>
+      _$PlaceDetailsFromJson(json);
+  Map<String, dynamic> toJson() => _$PlaceDetailsToJson(this);
 }
 
+@JsonSerializable()
+class OpeningHoursDetail {
+  @JsonKey(defaultValue: false)
+  final bool openNow;
 
+  @JsonKey(defaultValue: <OpeningHoursPeriod>[])
+  final List<OpeningHoursPeriod> periods;
+
+  @JsonKey(defaultValue: <String>[])
+  final List<String> weekdayText;
+
+  OpeningHoursDetail({
+    this.openNow = false,
+    this.periods = const <OpeningHoursPeriod>[],
+    this.weekdayText = const <String>[],
+  });
+
+  factory OpeningHoursDetail.fromJson(Map<String, dynamic> json) =>
+      _$OpeningHoursDetailFromJson(json);
+  Map<String, dynamic> toJson() => _$OpeningHoursDetailToJson(this);
+}
+
+@JsonSerializable()
+class OpeningHoursPeriodDate {
+  final int day;
+  final String time;
+
+  /// UTC Time
+  @Deprecated('use `toDateTime()`')
+  DateTime get dateTime => toDateTime();
+
+  DateTime toDateTime() => dayTimeToDateTime(day, time);
+
+  OpeningHoursPeriodDate({required this.day, required this.time});
+
+  factory OpeningHoursPeriodDate.fromJson(Map<String, dynamic> json) =>
+      _$OpeningHoursPeriodDateFromJson(json);
+  Map<String, dynamic> toJson() => _$OpeningHoursPeriodDateToJson(this);
+}
+
+@JsonSerializable()
+class OpeningHoursPeriod {
+  final OpeningHoursPeriodDate? open;
+  final OpeningHoursPeriodDate? close;
+
+  OpeningHoursPeriod({this.open, this.close});
+
+  factory OpeningHoursPeriod.fromJson(Map<String, dynamic> json) =>
+      _$OpeningHoursPeriodFromJson(json);
+  Map<String, dynamic> toJson() => _$OpeningHoursPeriodToJson(this);
+}
+
+@JsonSerializable()
+class Photo {
+  /// JSON photo_reference
+  final String photoReference;
+  final num height;
+  final num width;
+
+  /// JSON html_attributions
+  @JsonKey(defaultValue: <String>[])
+  final List<String> htmlAttributions;
+
+  Photo({
+    required this.photoReference,
+    required this.height,
+    required this.width,
+    this.htmlAttributions = const <String>[],
+  });
+
+  factory Photo.fromJson(Map<String, dynamic> json) => _$PhotoFromJson(json);
+  Map<String, dynamic> toJson() => _$PhotoToJson(this);
+}
+
+@JsonSerializable()
 class AlternativeId {
   /// JSON place_id
   final String placeId;
 
   final String scope;
 
-  AlternativeId(this.placeId, this.scope);
+  AlternativeId({required this.placeId, required this.scope});
 
-  factory AlternativeId.fromJson(Map json) =>
-      json != null ? AlternativeId(json['place_id'], json['scope']) : null;
+  factory AlternativeId.fromJson(Map<String, dynamic> json) =>
+      _$AlternativeIdFromJson(json);
+  Map<String, dynamic> toJson() => _$AlternativeIdToJson(this);
 }
 
+enum PriceLevel {
+  @JsonValue(0)
+  free,
 
-class PlacesDetailsResponse extends GoogleResponse<PlaceDetails> {
+  @JsonValue(1)
+  inexpensive,
+
+  @JsonValue(2)
+  moderate,
+
+  @JsonValue(3)
+  expensive,
+
+  @JsonValue(4)
+  veryExpensive,
+}
+
+@JsonSerializable()
+class PlacesDetailsResponse extends GoogleResponseStatus {
+  final PlaceDetails result;
+
   /// JSON html_attributions
+  @JsonKey(defaultValue: <String>[])
   final List<String> htmlAttributions;
 
-  PlacesDetailsResponse(
-    String status,
-    String errorMessage,
-    PlaceDetails result,
-    this.htmlAttributions,
-  ) : super(
-          status,
-          errorMessage,
-          result,
+  PlacesDetailsResponse({
+    required String status,
+    String? errorMessage,
+    required this.result,
+    required this.htmlAttributions,
+  }) : super(
+          status: status,
+          errorMessage: errorMessage,
         );
 
-  factory PlacesDetailsResponse.fromJson(Map json) => json != null
-      ? PlacesDetailsResponse(
-          json['status'],
-          json['error_message'],
-          json['result'] != null ? PlaceDetails.fromJson(json['result']) : null,
-          json['html_attributions'] != null
-              ? (json['html_attributions'] as List)?.cast<String>()
-              : [])
-      : null;
+  factory PlacesDetailsResponse.fromJson(Map<String, dynamic> json) =>
+      _$PlacesDetailsResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$PlacesDetailsResponseToJson(this);
 }
 
+@JsonSerializable()
+class Review {
+  /// JSON author_name
+  final String authorName;
+
+  /// JSON author_url
+  final String authorUrl;
+
+  final String? language;
+
+  /// JSON profile_photo_url
+  final String profilePhotoUrl;
+
+  final num rating;
+
+  /// JSON relative_time_description
+  final String relativeTimeDescription;
+
+  final String text;
+
+  final num time;
+
+  Review({
+    required this.authorName,
+    required this.authorUrl,
+    required this.language,
+    required this.profilePhotoUrl,
+    required this.rating,
+    required this.relativeTimeDescription,
+    required this.text,
+    required this.time,
+  });
+
+  factory Review.fromJson(Map<String, dynamic> json) => _$ReviewFromJson(json);
+  Map<String, dynamic> toJson() => _$ReviewToJson(this);
+}
+
+@JsonSerializable()
 class PlacesAutocompleteResponse extends GoogleResponseStatus {
+  @JsonKey(defaultValue: <Prediction>[])
   final List<Prediction> predictions;
 
-  PlacesAutocompleteResponse(
-    String status,
-    String errorMessage,
-    this.predictions,
-  ) : super(
-          status,
-          errorMessage,
+  PlacesAutocompleteResponse({
+    required String status,
+    String? errorMessage,
+    required this.predictions,
+  }) : super(
+          status: status,
+          errorMessage: errorMessage,
         );
 
-  factory PlacesAutocompleteResponse.fromJson(Map json) => json != null
-      ? PlacesAutocompleteResponse(
-          json['status'],
-          json['error_message'],
-          json['predictions']
-              ?.map((p) => Prediction.fromJson(p))
-              ?.toList()
-              ?.cast<Prediction>())
-      : null;
+  factory PlacesAutocompleteResponse.fromJson(Map<String, dynamic> json) =>
+      _$PlacesAutocompleteResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$PlacesAutocompleteResponseToJson(this);
 }
 
+@JsonSerializable()
 class Prediction {
-  final String description;
-  final String id;
+  final String? description;
+  final String? id;
+
+  @JsonKey(defaultValue: <Term>[])
   final List<Term> terms;
-  final int distanceMeters;
+
+  final int? distanceMeters;
 
   /// JSON place_id
-  final String placeId;
-  final String reference;
+  final String? placeId;
+  final String? reference;
+
+  @JsonKey(defaultValue: <String>[])
   final List<String> types;
 
   /// JSON matched_substrings
+  @JsonKey(defaultValue: <MatchedSubstring>[])
   final List<MatchedSubstring> matchedSubstrings;
 
-  final StructuredFormatting structuredFormatting;
+  final StructuredFormatting? structuredFormatting;
 
-  Prediction(
-      this.description,
-      this.id,
-      this.terms,
-      this.distanceMeters,
-      this.placeId,
-      this.reference,
-      this.types,
-      this.matchedSubstrings,
-      this.structuredFormatting);
+  Prediction({
+    this.description,
+    this.id,
+    this.terms = const <Term>[],
+    this.distanceMeters,
+    this.placeId,
+    this.reference,
+    this.types = const <String>[],
+    this.matchedSubstrings = const <MatchedSubstring>[],
+    this.structuredFormatting,
+  });
 
-  factory Prediction.fromJson(Map json) => json != null
-      ? Prediction(
-          json['description'],
-          json['id'],
-          json['terms']?.map((t) => Term.fromJson(t))?.toList()?.cast<Term>(),
-          json['distance_meters'],
-          json['place_id'],
-          json['reference'],
-          json['types'] != null ? (json['types'] as List)?.cast<String>() : [],
-          json['matched_substrings']
-              ?.map((m) => MatchedSubstring.fromJson(m))
-              ?.toList()
-              ?.cast<MatchedSubstring>(),
-          json['structured_formatting'] != null
-              ? StructuredFormatting.fromJson(json['structured_formatting'])
-              : null,
-        )
-      : null;
+  factory Prediction.fromJson(Map<String, dynamic> json) =>
+      _$PredictionFromJson(json);
+  Map<String, dynamic> toJson() => _$PredictionToJson(this);
 }
 
+@JsonSerializable()
 class Term {
   final num offset;
   final String value;
 
-  Term(this.offset, this.value);
+  Term({
+    required this.offset,
+    required this.value,
+  });
 
-  factory Term.fromJson(Map json) =>
-      json != null ? Term(json['offset'], json['value']) : null;
-
-  @override
-  String toString() {
-    return 'Term{offset: $offset, value: $value}';
-  }
+  factory Term.fromJson(Map<String, dynamic> json) => _$TermFromJson(json);
+  Map<String, dynamic> toJson() => _$TermToJson(this);
 
   @override
   bool operator ==(Object other) =>
@@ -631,19 +960,19 @@ class Term {
   int get hashCode => offset.hashCode ^ value.hashCode;
 }
 
+@JsonSerializable()
 class MatchedSubstring {
   final num offset;
   final num length;
 
-  MatchedSubstring(this.offset, this.length);
+  MatchedSubstring({
+    required this.offset,
+    required this.length,
+  });
 
-  factory MatchedSubstring.fromJson(Map json) =>
-      json != null ? MatchedSubstring(json['offset'], json['length']) : null;
-
-  @override
-  String toString() {
-    return 'MatchedSubstring{offset: $offset, length: $length}';
-  }
+  factory MatchedSubstring.fromJson(Map<String, dynamic> json) =>
+      _$MatchedSubstringFromJson(json);
+  Map<String, dynamic> toJson() => _$MatchedSubstringToJson(this);
 
   @override
   bool operator ==(Object other) =>
@@ -657,24 +986,21 @@ class MatchedSubstring {
   int get hashCode => offset.hashCode ^ length.hashCode;
 }
 
+@JsonSerializable()
 class StructuredFormatting {
   final String mainText;
+
+  @JsonKey(defaultValue: <MatchedSubstring>[])
   final List<MatchedSubstring> mainTextMatchedSubstrings;
-  final String secondaryText;
+  final String? secondaryText;
 
-  StructuredFormatting(
-    this.mainText,
-    this.mainTextMatchedSubstrings,
+  StructuredFormatting({
+    required this.mainText,
+    this.mainTextMatchedSubstrings = const <MatchedSubstring>[],
     this.secondaryText,
-  );
+  });
 
-  factory StructuredFormatting.fromJson(Map json) => json != null
-      ? StructuredFormatting(
-          json['main_text'],
-          json['main_text_matched_substrings']
-              ?.map((m) => MatchedSubstring.fromJson(m))
-              ?.toList()
-              ?.cast<MatchedSubstring>(),
-          json['secondary_text'])
-      : null;
+  factory StructuredFormatting.fromJson(Map<String, dynamic> json) =>
+      _$StructuredFormattingFromJson(json);
+  Map<String, dynamic> toJson() => _$StructuredFormattingToJson(this);
 }

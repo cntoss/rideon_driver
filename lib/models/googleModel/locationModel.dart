@@ -10,17 +10,17 @@ LocationModel locationFromJson(String str) =>
 String locationToJson(LocationModel data) => json.encode(data.toJson());
 
 class MapModel {
-  MapModel({this.name, this.id, this.locationModel});
-  
-  String name;
-  String id;
+  MapModel({this.name, this.id, required this.locationModel});
+
+  String? name;
+  String? id;
   LocationModel locationModel;
 }
 
 class LocationModel {
   LocationModel({
-    this.lat,
-    this.lng,
+    required this.lat,
+    required this.lng,
   });
 
   double lat;
@@ -36,7 +36,7 @@ class LocationModel {
         "lng": lng,
       };
 
-    factory LocationModel.fromGeomerty(lat, lng) {
+  factory LocationModel.fromGeomerty(lat, lng) {
     return LocationModel(
       lat: lat,
       lng: lng,

@@ -9,6 +9,7 @@ import 'package:hive/hive.dart';
 part 'userModel.g.dart';
 
 
+
 User userFromJson(String str) => User.fromJson(json.decode(str));
 
 String userToJson(User data) => json.encode(data.toJson());
@@ -18,38 +19,38 @@ String userToJson(User data) => json.encode(data.toJson());
 class User  extends HiveObject{  
 
     @HiveField(0)
-    int id;
+    int? id;
     
     @HiveField(1)
-    String name;
+    String? name;
 
     @HiveField(2)
-    String phone;
+    String? phone;
   
     @HiveField(3)
-    String email;
+    String? email;
 
     @HiveField(4)
-    String gender;
+    String? gender;
   
     @HiveField(5)
-    String dob;
+    String? dob;
   
     @HiveField(6)
-    String image;
+    String? image;
   
     @HiveField(7)
-    int paymentId;
+    int? paymentId;
 
  User({
-        this.id,
-        this.name,
-        this.phone,
-        this.email,
-        this.gender,
-        this.dob,
-        this.image,
-        this.paymentId,
+       this.id,
+       this.name,
+       this.phone,
+       this.email,
+       this.gender,
+       this.dob,
+       this.image,
+       this.paymentId,
     });
 
     factory User.fromJson(Map<String, dynamic> json) => User(

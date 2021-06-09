@@ -7,8 +7,8 @@ import 'package:rideon_driver/screens/profile/addFIle.dart';
 import 'package:rideon_driver/widget/appButton.dart';
 
 class DocumentProcessScreen extends StatefulWidget {
-  final User user;
-  DocumentProcessScreen({this.user, Key key}) : super(key: key);
+  final User? user;
+  DocumentProcessScreen({ this.user, Key? key}) : super(key: key);
   @override
   _DocumentProcessScreenState createState() =>
       _DocumentProcessScreenState(this.user);
@@ -16,7 +16,7 @@ class DocumentProcessScreen extends StatefulWidget {
 
 class _DocumentProcessScreenState extends State<DocumentProcessScreen> {
   _DocumentProcessScreenState(this._user);
-  User _user;
+  User? _user;
 
   @override
   void initState() {

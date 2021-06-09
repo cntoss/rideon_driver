@@ -12,8 +12,8 @@ String requestNotificationToJson(RequestNotification data) => json.encode(data.t
 
 class RequestNotification {
     RequestNotification({
-        this.notification,
-        this.data,
+        required this.notification,
+        required this.data,
     });
 
     NotificationHeader notification;
@@ -33,17 +33,17 @@ class RequestNotification {
 class NotificationData {
     NotificationData({
         this.clickAction,
-        this.message,
-        this.type,
-        this.title,
-        this.fromLocation,
-        this.toLocation,
-        this.time,
-        this.distance,
-        this.id,
+        required this.message,
+        required this.type,
+        required this.title,
+        required this.fromLocation,
+        required this.toLocation,
+        required this.time,
+        required this.distance,
+        required this.id,
     });
 
-    String clickAction;
+    String? clickAction;
     String message;
     String type;
     String title;
@@ -80,14 +80,14 @@ class NotificationData {
 
 class NotificationHeader {
     NotificationHeader({
-        this.title,
-        this.body,
+       required this.title,
+       required this.body,
         this.sound,
     });
 
     String title;
     String body;
-    String sound;
+    String? sound;
 
     factory NotificationHeader.fromJson(Map<dynamic, dynamic> json) => NotificationHeader(
         title: json["title"],

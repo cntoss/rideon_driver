@@ -4,15 +4,15 @@ enum DocumentStage { attention, redy, done, pending }
 
 class Document {
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final DocumentStage stage;
-  final VoidCallback onPressed;
-  final String detail;
+  final VoidCallback? onPressed;
+  final String? detail;
 
   const Document(
-      {@required this.title,
+      {required this.title,
       this.subtitle,
-      @required this.stage,
+      required this.stage,
       this.onPressed,
       this.detail});
 }

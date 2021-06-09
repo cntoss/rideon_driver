@@ -13,15 +13,15 @@ class PinInformation {
   Color labelColor;
 
   PinInformation(
-      {this.pinPath,
-      this.avatarPath,
-      this.location,
-      this.locationName,
-      this.labelColor});
+      {required this.pinPath,
+      required this.avatarPath,
+      required this.location,
+      required this.locationName,
+      required this.labelColor});
 }
 
 class RouteScreen extends StatefulWidget {
-  RouteScreen({this.sourceDetail, this.destinationDetail});
+  RouteScreen({required this.sourceDetail, required this.destinationDetail});
   final LocationDetail sourceDetail;
   final LocationDetail destinationDetail;
   @override
@@ -31,22 +31,22 @@ class RouteScreen extends StatefulWidget {
 
 class RouteScreenState extends State<RouteScreen> {
   RouteScreenState(this.sourceDetail, this.destinationDetail);
-  LocationDetail sourceDetail;
-  LocationDetail destinationDetail;
+  late LocationDetail sourceDetail;
+  late LocationDetail destinationDetail;
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> _markers = Set<Marker>();
 // for my drawn routes on the map
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
-  PolylinePoints polylinePoints;
+  late PolylinePoints polylinePoints;
 // for my custom marker pins
-  BitmapDescriptor sourceIcon;
-  BitmapDescriptor destinationIcon;
+  late BitmapDescriptor sourceIcon;
+  late BitmapDescriptor destinationIcon;
 // the user's initial location and current location
 // as it moves
-  Position currentLocation;
+  late Position currentLocation;
 // a reference to the destination location
-  Position destinationLocation;
+  late Position destinationLocation;
 // wrapper around the location API
   double pinPillPosition = -100;
   PinInformation currentlySelectedPin = PinInformation(
@@ -55,8 +55,8 @@ class RouteScreenState extends State<RouteScreen> {
       location: LatLng(0, 0),
       locationName: '',
       labelColor: Colors.grey);
-  PinInformation sourcePinInfo;
-  PinInformation destinationPinInfo;
+  late PinInformation sourcePinInfo;
+  late PinInformation destinationPinInfo;
 
   @override
   void initState() {
@@ -64,8 +64,8 @@ class RouteScreenState extends State<RouteScreen> {
     // create an instance of Location
     polylinePoints = PolylinePoints();
     currentLocation = Position.fromMap({
-      "latitude": sourceDetail.geometry.location.lat,
-      "longitude": sourceDetail.geometry.location.lng
+      "latitude": sourceDetail.geometry!.location.lat,
+      "longitude": sourceDetail.geometry!.location.lng
     });
     // subscribe to changes in the user's location
     // by "listening" to the location's onLocationChanged event
@@ -99,8 +99,8 @@ class RouteScreenState extends State<RouteScreen> {
 
   void setInitialLocation() async {
     destinationLocation = Position.fromMap({
-      "latitude": widget.destinationDetail.geometry.location.lat,
-      "longitude": widget.destinationDetail.geometry.location.lng
+      "latitude": widget.destinationDetail.geometry!.location.lat,
+      "longitude": widget.destinationDetail.geometry!.location.lng
     });
   }
 
@@ -252,7 +252,7 @@ class MapPinPillComponent extends StatefulWidget {
   final double pinPillPosition;
   final PinInformation currentlySelectedPin;
 
-  MapPinPillComponent({this.pinPillPosition, this.currentlySelectedPin});
+  MapPinPillComponent({required this.pinPillPosition, required this.currentlySelectedPin});
 
   @override
   State<StatefulWidget> createState() => MapPinPillComponentState();

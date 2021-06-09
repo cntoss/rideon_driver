@@ -14,7 +14,7 @@ class HomePageWrapper extends StatefulWidget {
 }
 
 class _HomePageWrapperState extends State<HomePageWrapper> {
-  PageController _pageController;
+  late PageController _pageController;
   int currentpage = 0;
   ValueNotifier<int> op = ValueNotifier<int>(0);
   bool _isOnline = false;
@@ -27,8 +27,8 @@ class _HomePageWrapperState extends State<HomePageWrapper> {
   }
 
   pagePositionListner() {
-    if (op.value != (_pageController.page + .5).toInt())
-      op.value = (_pageController.page + 0.5).toInt();
+    if (op.value != (_pageController.page! + .5).toInt())
+      op.value = (_pageController.page! + 0.5).toInt();
 
     print(currentpage);
     setState(() {

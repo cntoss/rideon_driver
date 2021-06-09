@@ -8,20 +8,20 @@ import 'package:rideon_driver/services/helper/hiveService.dart';
 class SavedAddressService {
   Box _box = HiveService().getHiveBox();
 
-  void saveAddress({@required SavedAddressModel savedAddressModel}) {
+  void saveAddress({required SavedAddressModel savedAddressModel}) {
     List<SavedAddressModel> _list = getSavedAddress();
     _list.add(savedAddressModel);
     _box.put(hkAddressType, _list);
   }
 
-  void editAddress({@required SavedAddressModel savedAddressModel}) {
+  void editAddress({required SavedAddressModel savedAddressModel}) {
     List<SavedAddressModel> _list = getSavedAddress();
     _list.removeWhere((element) => element.id == savedAddressModel.id);
     _list.add(savedAddressModel);
     _box.put(hkAddressType, _list);
   }
 
-  void deleteAddress({@required SavedAddressModel savedAddressModel}) {
+  void deleteAddress({required SavedAddressModel savedAddressModel}) {
     List<SavedAddressModel> _list = getSavedAddress();
     _list.removeWhere((element) => element.id == savedAddressModel.id);
     _box.put(hkAddressType, _list);

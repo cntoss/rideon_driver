@@ -8,7 +8,7 @@ class LeaderboardScreen extends StatefulWidget {
 }
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
-  List<LeaderBoard> leaderBoard;
+  late List<LeaderBoard> leaderBoard;
   bool _orderOnPrice = true;
 
   Random random = new Random();
@@ -115,12 +115,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 itemBuilder: (BuildContext context, index) {
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: leaderBoard[index].image.isNullOrEmpty()
-                          ? AssetImage('assets/avatar.png')
-                          : NetworkImage(leaderBoard[index].image),
+                      backgroundImage: leaderBoard[index].image == null
+                          ? AssetImage('assets/avatar.png') as ImageProvider
+                          : NetworkImage(leaderBoard[index].image!),
                       radius: 20,
                     ),
-                    title: Text(leaderBoard[index].name ?? ''),
+                    title: Text(leaderBoard[index].name ),
                     //isThreeLine: true,
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,14 +155,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
 class LeaderBoard {
   String name;
-  String image;
-  String id;
+  String? image;
+  String? id;
   int trip;
   double income;
-  String location;
+  String? location;
 
   LeaderBoard(
-      {this.name, this.image, this.id, this.trip, this.income, this.location});
+      {required this.name, this.image, this.id, required this.trip, required this.income, this.location});
 
   factory LeaderBoard.fromJsom(Map<String, dynamic> json) {
     return LeaderBoard(

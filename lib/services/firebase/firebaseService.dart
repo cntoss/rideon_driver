@@ -12,94 +12,81 @@ import 'package:rideon_driver/widget/custom_dialog.dart';
 import 'notification_service.dart';
 
 class FirebaseService {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   void initFirebase() {
-    _firebaseMessaging.configure(onMessage: (dynamic message) async {
+    _firebaseMessaging.getToken().then((value) => print(value!));
+    _firebaseMessaging.getInitialMessage().then((value) => print(value));
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print(message);
       _showNotificationDialog(message);
       _saveNotification(message);
-    }, onLaunch: (dynamic message) async {
-      _saveNotification(message);
-      _openNotification(message);
-    }, onResume: (dynamic message) async {
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       _saveNotification(message);
       _openNotification(message);
     });
 
-    _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, badge: true, alert: true));
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {});
+    _firebaseMessaging.requestPermission();
+    /* _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {}); */
     _firebaseMessaging
         .subscribeToTopic("all"); //"to":"topics/all" in firebase body parameter
-    _firebaseMessaging
-        .subscribeToTopic("ride_request");
+    _firebaseMessaging.subscribeToTopic("ride_request");
   }
 
-  void _showNotificationDialog(message) {
-    String title;
-    String content;
-
-    if (Platform.isIOS) {
-      title = message['aps']["alert"]["title"];
-      content = message['aps']["alert"]["body"];
-    } else {
-      title = message["notification"]["title"];
-      content = message["notification"]["body"];
+  void _showNotificationDialog(RemoteMessage message) {
+    RemoteNotification? notification = message.notification;
+    if (notification != null) {
+      CustomDialog().showCustomDialog(
+          title: notification.title,
+          content: notification.body,
+          actions: [
+            CustomDialog().dialogButton(
+              text: 'CLOSE',
+              color: Colors.black12,
+              onPressed: () {
+                Navigator.pop(AppConfig.navigatorKey.currentState!.context);
+              },
+            ),
+            CustomDialog().dialogButton(
+              text: 'OPEN',
+              onPressed: () {
+                Navigator.pop(AppConfig.navigatorKey.currentState!.context);
+                _openNotification(message);
+              },
+            ),
+          ]);
     }
-
-    CustomDialog().showCustomDialog(title: title, content: content, actions: [
-      CustomDialog().dialogButton(
-        text: 'CLOSE',
-        color: Colors.black12,
-        onPressed: () {
-          Navigator.pop(AppConfig.navigatorKey.currentState.context);
-        },
-      ),
-      CustomDialog().dialogButton(
-        text: 'OPEN',
-        onPressed: () {
-          Navigator.pop(AppConfig.navigatorKey.currentState.context);
-          _openNotification(message);
-        },
-      ),
-    ]);
   }
 
 //Notification which type is news are stored locally rest are not
-  void _saveNotification(dynamic message) {
-    if (Platform.isIOS) {
-      if (message["type"] == "news")
-        NotificationService().saveNotification(OfflineNotification(
-            title: message["title"],
-            description: message["message"],
-            date: DateTime.now()));
-    } else {
-      if (message["data"]["type"] == "news")
-        NotificationService().saveNotification(OfflineNotification(
-            title: message["data"]["title"],
-            description: message["data"]["message"],
-            image: message["data"]["image"],
-            link: message["data"]["link"],
-            date: DateTime.now()));
-    }
+  void _saveNotification(RemoteMessage message) {
+    if (message.data["type"] == "news")
+      NotificationService().saveNotification(OfflineNotification(
+          title: message.data["title"],
+          description: message.data["message"],
+          image: message.data["image"],
+          link: message.data["link"],
+          date: DateTime.now()));
   }
 
-  void _openNotification(Map<String, dynamic> message) {
-    if (message['data']['type'] == 'ride_request')
+  void _openNotification(RemoteMessage message) {
+    if (message.data['type'] == 'ride_request')
       Navigator.push(
-        AppConfig.navigatorKey.currentState.context,
+        AppConfig.navigatorKey.currentState!.context,
         MaterialPageRoute(
           builder: (context) {
             return RideRequestPage(
-              notificationData: RequestNotification.fromJson(message).data,
+              notificationData: NotificationData.fromJson(message.data),
             );
           },
         ),
       );
     else
       Navigator.push(
-        AppConfig.navigatorKey.currentState.context,
+        AppConfig.navigatorKey.currentState!.context,
         MaterialPageRoute(
           builder: (context) {
             return NotificationScreen();
@@ -110,7 +97,7 @@ class FirebaseService {
 
   Future<String> getFirebaseToken() {
     Future<String> firebaseToken =
-        _firebaseMessaging.getToken().then((value) => value);
+        _firebaseMessaging.getToken().then((value) => value!);
     return firebaseToken;
   }
 }

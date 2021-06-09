@@ -20,7 +20,7 @@ class HiveService {
           key: hkEncryptionKey, value: base64UrlEncode(key));
     }
     var encryptionKey =
-        base64Url.decode(await secureStorage.read(key: hkEncryptionKey));
+        base64Url.decode(await secureStorage.read(key: hkEncryptionKey) as String);
     if (!Hive.isBoxOpen(hiveBoxName)) {
       await Hive.initFlutter();
       _registerTypeAdapters();

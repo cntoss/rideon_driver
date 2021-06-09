@@ -18,10 +18,10 @@ import 'dart:io' show Platform;
 
 class PlaceSearch extends StatefulWidget {
   PlaceSearch({
-    Key key,
+    Key? key,
     this.apiKey = googleAPIKey,
     this.onPlacePicked,
-    @required this.initialPosition,
+    required this.initialPosition,
     this.useCurrentLocation,
     this.desiredLocationAccuracy = LocationAccuracy.high,
     this.onMapCreated,
@@ -61,24 +61,23 @@ class PlaceSearch extends StatefulWidget {
     this.autocompleteOnTrailingWhitespace = false,
     this.hidePlaceDetailsWhenDraggingPin = true,
   }) : super(key: key);
-
-  final String apiKey;
+final String apiKey;
 
   final LatLng initialPosition;
-  final bool useCurrentLocation;
+  final bool? useCurrentLocation;
   final LocationAccuracy desiredLocationAccuracy;
 
-  final MapCreatedCallback onMapCreated;
+  final MapCreatedCallback? onMapCreated;
 
-  final String hintText;
-  final String searchingText;
+  final String? hintText;
+  final String? searchingText;
 
-  final double searchBarHeight;
-  final EdgeInsetsGeometry contentPadding;
+  final double? searchBarHeight;
+  final EdgeInsetsGeometry? contentPadding;
   final bool isSearchBar;
 
-  final ValueChanged<String> onAutoCompleteFailed;
-  final ValueChanged<String> onGeocodingSearchFailed;
+  final ValueChanged<String>? onAutoCompleteFailed;
+  final ValueChanged<String>? onGeocodingSearchFailed;
   final int autoCompleteDebounceInMilliseconds;
   final int cameraMoveDebounceInMilliseconds;
 
@@ -90,13 +89,14 @@ class PlaceSearch extends StatefulWidget {
   final bool usePinPointingSearch;
   final bool usePlaceDetailSearch;
 
-  final num autocompleteOffset;
-  final num autocompleteRadius;
-  final String autocompleteLanguage;
-  final List<String> autocompleteTypes;
-  final List<Component> autocompleteComponents;
-  final bool strictbounds;
-  final String region;
+  final num? autocompleteOffset;
+  final num? autocompleteRadius;
+  final String? autocompleteLanguage;
+  final List<String>? autocompleteTypes;
+  //todo:remove if doest not requires filter
+  final List<Component>? autocompleteComponents;
+  final bool? strictbounds;
+  final String? region;
 
   /// If true the [body] and the scaffold's floating widgets should size
   /// themselves to avoid the onscreen keyboard whose height is defined by the
@@ -115,34 +115,34 @@ class PlaceSearch extends StatefulWidget {
   ///
   /// If you managed to use your own [selectedPlaceWidgetBuilder], then this WILL NOT be invoked, and you need use data which is
   /// being sent with [selectedPlaceWidgetBuilder].
-  final ValueChanged<PickResult> onPlacePicked;
+  final ValueChanged<PickResult>? onPlacePicked;
 
   /// optional - builds selected place's UI
   ///
   /// It is provided by default if you leave it as a null.
   /// INPORTANT: If this is non-null, [onPlacePicked] will not be invoked, as there will be no default 'Select here' button.
-  final SelectedPlaceWidgetBuilder selectedPlaceWidgetBuilder;
+  final SelectedPlaceWidgetBuilder? selectedPlaceWidgetBuilder;
 
   /// optional - builds customized pin widget which indicates current pointing position.
   ///
   /// It is provided by default if you leave it as a null.
-  final PinBuilder pinBuilder;
+  final PinBuilder? pinBuilder;
 
   /// optional - sets 'proxy' value in google_maps_webservice
   ///
   /// In case of using a proxy the baseUrl can be set.
   /// The apiKey is not required in case the proxy sets it.
   /// (Not storing the apiKey in the app is good practice)
-  final String proxyBaseUrl;
+  final String? proxyBaseUrl;
 
   /// optional - set 'client' value in google_maps_webservice
   ///
   /// In case of using a proxy url that requires authentication
   /// or custom configuration
-  final BaseClient httpClient;
+  final BaseClient? httpClient;
 
   /// Initial value of autocomplete search
-  final String initialSearchString;
+  final String? initialSearchString;
 
   /// Whether to search for the initial value or not
   final bool searchForInitialValue;
@@ -173,8 +173,8 @@ class PlaceSearch extends StatefulWidget {
 
 class _PlaceSearchState extends State<PlaceSearch> {
   GlobalKey appBarKey = GlobalKey();
-  Future<PlaceProvider> _futureProvider;
-  PlaceProvider provider;
+  Future<PlaceProvider>? _futureProvider;
+  PlaceProvider? provider;
   SearchBarController searchBarController = SearchBarController();
 
   @override
@@ -217,7 +217,7 @@ class _PlaceSearchState extends State<PlaceSearch> {
         future: _futureProvider,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            provider = snapshot.data;
+            provider = snapshot.data as PlaceProvider;
 
             return ChangeNotifierProvider.value(
               value: provider,
@@ -236,7 +236,7 @@ class _PlaceSearchState extends State<PlaceSearch> {
                             titleSpacing: 0.0,
                             title: _buildSearchBar(),
                           )
-                        : Container(),
+                        : Container() as PreferredSizeWidget,
                     body: Container(),
                   );
                 },
@@ -289,7 +289,7 @@ class _PlaceSearchState extends State<PlaceSearch> {
           child: AutoCompleteSearch(
               appBarKey: appBarKey,
               searchBarController: searchBarController,
-              sessionToken: provider.sessionToken,
+              sessionToken: provider!.sessionToken,
               hintText: widget.hintText,
               searchingText: widget.searchingText,
               debounceMilliseconds: widget.autoCompleteDebounceInMilliseconds,
@@ -298,7 +298,7 @@ class _PlaceSearchState extends State<PlaceSearch> {
               },
               onSearchFailed: (status) {
                 if (widget.onAutoCompleteFailed != null) {
-                  widget.onAutoCompleteFailed(status);
+                  widget.onAutoCompleteFailed!(status);
                 }
               },
               autocompleteOffset: widget.autocompleteOffset,
@@ -319,30 +319,31 @@ class _PlaceSearchState extends State<PlaceSearch> {
   }
 
   _pickPrediction(Prediction prediction) async {
-    provider.placeSearchingState = SearchingState.Searching;
+    provider!.placeSearchingState = SearchingState.Searching;
 
     final PlacesDetailsResponse response =
-        await provider.places.getDetailsByPlaceId(
-      prediction.placeId,
-      sessionToken: provider.sessionToken,
+        await provider!.places.getDetailsByPlaceId(
+      prediction.placeId!,
+      sessionToken: provider!.sessionToken,
       language: widget.autocompleteLanguage,
     );
 
     if (response.errorMessage?.isNotEmpty == true ||
         response.status == "REQUEST_DENIED") {
-      print("AutoCompleteSearch Error: " + response.errorMessage);
+      print("AutoCompleteSearch Error: " + response.errorMessage!);
       if (widget.onAutoCompleteFailed != null) {
-        widget.onAutoCompleteFailed(response.status);
+        widget.onAutoCompleteFailed!(response.status);
       }
       return;
     }
 
-    provider.selectedPlace = PickResult.fromPlaceDetailResult(response.result);
-    widget.onPlacePicked(provider.selectedPlace);
+    provider!.selectedPlace = PickResult.fromPlaceDetailResult(response.result);
+    //make did not worked
+    widget.onPlacePicked!(provider!.selectedPlace!);
     Navigator.pop(context);
     // Prevents searching again by camera movement.
-    provider.isAutoCompleteSearching = true;
+    provider!.isAutoCompleteSearching = true;
 
-    provider.placeSearchingState = SearchingState.Idle;
+    provider!.placeSearchingState = SearchingState.Idle;
   }
 }

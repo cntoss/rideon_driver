@@ -4,13 +4,12 @@ import 'package:rideon_driver/config/constant.dart';
 import 'package:rideon_driver/models/user/userModel.dart';
 import 'package:rideon_driver/screens/profile/add_single_field.dart';
 import 'package:rideon_driver/widget/customCard.dart';
-import 'package:rideon_driver/services/utils/extension.dart';
 
 enum FieldType { email, phone }
 
 class ProfileEditScreen extends StatefulWidget {
   final User user;
-  ProfileEditScreen({this.user, Key key}) : super(key: key);
+  ProfileEditScreen({required this.user, Key?key}) : super(key: key);
   @override
   _ProfileEditScreenState createState() => _ProfileEditScreenState(this.user);
 }
@@ -21,7 +20,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   bool _enable = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  TextEditingController _phoneNumberCOntroller,
+  late TextEditingController _phoneNumberCOntroller,
       _econtact,
       _nameCotroler,
       _emailController;
@@ -52,9 +51,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             CustomCard(
               child: Stack(children: [
                 CircleAvatar(
-                  backgroundImage: _user.image.isNullOrEmpty()
-                      ? AssetImage('assets/avatar.png')
-                      : NetworkImage(_user.image),
+                  backgroundImage: _user.image == null
+                      ? AssetImage('assets/avatar.png') as ImageProvider
+                      : NetworkImage(_user.image!),
                   radius: 50,
                 ),
                 /*  child: _user.image.isNullOrEmpty()
@@ -188,7 +187,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   _showNotic() {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(
+   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         behavior: SnackBarBehavior.floating,
         margin: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 100.0),
         content: Text('Contact support to edit this field')));

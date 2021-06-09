@@ -20,7 +20,7 @@ class AddressTypeAdapter extends TypeAdapter<AddressType> {
       case 2:
         return AddressType.Other;
       default:
-        return null;
+        return AddressType.Home;
     }
   }
 

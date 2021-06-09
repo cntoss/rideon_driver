@@ -20,13 +20,13 @@ class LocationSetScreen extends StatefulWidget {
 
 class _LocationSetScreenState extends State<LocationSetScreen> {
   _LocationSetScreenState(this.fromLocationModel);
-  TextEditingController _fromController;
+   late TextEditingController _fromController;
   TextEditingController _toController = TextEditingController();
   LocationDetail fromLocationModel = LocationDetail();
   LocationDetail toLocationModel = LocationDetail();
-  PlaceApiProvider apiClient;
+  late PlaceApiProvider apiClient;
   String query = '';
-  CurrentLocation currentLocation;
+  CurrentLocation? currentLocation;
   bool _fromCLear = false;
   bool _toClear = false;
   @override
@@ -47,7 +47,7 @@ class _LocationSetScreenState extends State<LocationSetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Stack(
           children: [
@@ -167,7 +167,7 @@ class _LocationSetScreenState extends State<LocationSetScreen> {
                           ? null
                           : apiClient.fetchSuggestions(query,
                               Localizations.localeOf(context).languageCode),
-                      builder: (context, snapshot) => query == ''
+                      builder: (context, AsyncSnapshot<List<Suggestion>> snapshot) => query == ''
                           ? Container()
                           : snapshot.hasData
                               ? ListView.separated(
@@ -189,13 +189,13 @@ class _LocationSetScreenState extends State<LocationSetScreen> {
                                     title: Transform.translate(
                                       offset: Offset(-25, 0),
                                       child: Text(
-                                          (snapshot.data[index] as Suggestion)
+                                          (snapshot.data![index])
                                               .description),
                                     ),
                                     onTap: () async {
-                                      if (snapshot.data[index] != null) {
+                                      if (snapshot.data![index] != null) {
                                         var result =
-                                            snapshot.data[index] as Suggestion;
+                                            snapshot.data![index];
                                         final placeDetails =
                                             await PlaceApiProvider(UniqueKey())
                                                 .getPlaceDetailFromId(
@@ -220,7 +220,7 @@ class _LocationSetScreenState extends State<LocationSetScreen> {
                                       _navigateToProceed();
                                     },
                                   ),
-                                  itemCount: snapshot.data.length,
+                                  itemCount: snapshot.data!.length,
                                 )
                               : Container(child: Text('Loading...')),
                     ),
@@ -332,7 +332,7 @@ class _LocationSetScreenState extends State<LocationSetScreen> {
                                                               const EdgeInsets
                                                                   .all(8.0),
                                                           child: Text(
-                                                              '${selectedPlace.name} ${selectedPlace.formattedAddress}'),
+                                                              '${selectedPlace!.name} ${selectedPlace.formattedAddress}'),
                                                         ),
                                                         onPressed: () {}),
                                                     ElevatedButton(
@@ -363,7 +363,7 @@ class _LocationSetScreenState extends State<LocationSetScreen> {
                                                             _fromController
                                                                     .text =
                                                                 selectedPlace
-                                                                    .formattedAddress;
+                                                                    .formattedAddress as String;
                                                             fromLocationModel =
                                                                 LocationDetail
                                                                     .fromPickResult(
@@ -375,7 +375,7 @@ class _LocationSetScreenState extends State<LocationSetScreen> {
                                                           setState(() {
                                                             _toController.text =
                                                                 selectedPlace
-                                                                    .name;
+                                                                    .name!;
                                                             toLocationModel =
                                                                 LocationDetail
                                                                     .fromPickResult(

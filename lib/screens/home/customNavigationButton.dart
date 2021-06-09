@@ -10,11 +10,11 @@ class CustomBottomNavigation extends StatefulWidget {
   final Color unselectedItemColor;
   final int animationDurationMilliseconds;
   final Curve curve;
-  final Null Function(int) onTabChange;
+  final Null Function(int)? onTabChange;//Null Function(int) v2 chnaged
 
   const CustomBottomNavigation(
-      {Key key,
-      @required this.navItems,
+      {Key? key,
+      required this.navItems,
       this.bgColor = Colors.white54,
       this.selectorColor = Colors.white,
       this.selectedItemColor = Colors.green,
@@ -47,7 +47,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
           onTap: () {
             setState(() {
               selected = i;
-              widget.onTabChange(i);
+              widget.onTabChange!(i);
             });
           },
           child: Container(
@@ -115,7 +115,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
     );
   }
 
-  Widget applyShade({Widget child}) {
+  Widget applyShade({Widget? child}) {
     return ShaderMask(
         shaderCallback: (Rect bounds) {
           return LinearGradient(

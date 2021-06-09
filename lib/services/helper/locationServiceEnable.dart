@@ -4,11 +4,11 @@ import 'package:rideon_driver/config/appConfig.dart';
 import 'package:location/location.dart';
 
 class LocationService {
-  BuildContext context = AppConfig.navigatorKey.currentState.overlay.context;
-  Future<bool> showLocationDialog(
-      {@required String title,
-      VoidCallback onPressed,
-      @required String message}) {
+  BuildContext context = AppConfig.navigatorKey.currentState!.overlay!.context;
+  Future<bool?> showLocationDialog(
+      {required String title,
+      VoidCallback? onPressed,
+      required String message}) {
     return showDialog(
       barrierDismissible: false,
       context: context,
@@ -17,7 +17,7 @@ class LocationService {
           title: Text(title),
           content: Text(message),
           actions: <Widget>[
-            FlatButton(
+            ElevatedButton(
                 //onPressed: onPressed,
                 onPressed: () async {
                   Navigator.pop(context);
@@ -30,7 +30,7 @@ class LocationService {
     );
   }
 
-  Future<String> getLocation() async {
+  Future<String?> getLocation() async {
     Location location = new Location();
     bool _locationServiceEnabled;
     PermissionStatus _permissionGranted;

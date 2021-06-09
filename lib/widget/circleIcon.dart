@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class CircularIcon extends StatelessWidget {
   final Icon icon;
   const CircularIcon({
-    this.icon,
-    Key key,
+   required this.icon,
+    Key? key,
   }) : super(key: key);
 
   @override

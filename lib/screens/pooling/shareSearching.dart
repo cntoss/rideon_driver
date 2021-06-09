@@ -127,7 +127,7 @@ class SharingResult extends StatefulWidget {
 class _SharingResultState extends State<SharingResult> {
   List<Model> list = [];
   int rate = 2;
-  String driverImage;
+  String? driverImage;
   @override
   void initState() {
     super.initState();
@@ -262,8 +262,8 @@ class _SharingResultState extends State<SharingResult> {
                                 children: [
                                   CircleAvatar(
                                     backgroundImage: driverImage == null
-                                        ? AssetImage('assets/avatar.png')
-                                        : NetworkImage('_user.image'),
+                                        ? AssetImage('assets/avatar.png') as ImageProvider
+                                        : NetworkImage('randomLInk'),
                                     radius: 20,
                                   ),
                                   Padding(
@@ -335,6 +335,7 @@ class _SharingResultState extends State<SharingResult> {
                 rating: 3.5,
                 music: true,
                 smoke: false,
+                petAllow: true,
                 funny: true,
                 memberDate: "2077-09-11",
                 rides: 29))));
@@ -343,9 +344,9 @@ class _SharingResultState extends State<SharingResult> {
 
 class Model {
   String address;
-  double lat;
+ /*  double lat;
   double long;
-  Color color;
+  */ Color color;
   //Other fields if needed....
   Model(this.address, this.color);
   //initialise other fields so on....

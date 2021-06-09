@@ -48,6 +48,7 @@ class AddSingleField extends StatelessWidget {
                               keyboardType: TextInputType.phone,
                               maxLength: 10,
                               validator: (s) {
+                                if(s == null) return 'Plese enter valid phone number';
                                 return s.isValidPhone()
                                     ? null
                                     : "${s.trim().length > 0 ? s + " is not a" : "Please enter a"} valid phone number.";
@@ -83,6 +84,7 @@ class AddSingleField extends StatelessWidget {
                           FocusScope.of(context).unfocus();
                         },
                         validator: (s) {
+                          if(s == null) return 'Please enter valid email';
                           return s.isValidEmail()
                               ? null
                               : "${s.trim().length > 0 ? s + " is not a" : "Please enter a"} valid email address.";

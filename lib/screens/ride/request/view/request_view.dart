@@ -11,37 +11,41 @@ import 'package:rideon_driver/models/notification/request_notification.dart';
 import 'package:rideon_driver/services/helper/zoomCalculate.dart';
 
 class RideRequestPage extends StatefulWidget {
-  RideRequestPage({this.notificationData});
+  RideRequestPage({required this.notificationData});
   final NotificationData notificationData;
   @override
   State<StatefulWidget> createState() =>
       RideRequestState(this.notificationData);
 }
 
-class RideRequestState extends State<RideRequestPage> {
+class RideRequestState extends State<RideRequestPage> with SingleTickerProviderStateMixin{
+ 
   RideRequestState(this._notificationData);
   NotificationData _notificationData;
 
-  LocationDetail sourceDetail;
-  LocationDetail destinationDetail;
+  late LocationDetail sourceDetail;
+  late LocationDetail destinationDetail;
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> _markers = Set<Marker>();
 
 // for my drawn routes on the map
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
-  PolylinePoints polylinePoints;
+  late PolylinePoints polylinePoints;
 
 // for my custom marker pins
-  BitmapDescriptor sourceIcon;
-  BitmapDescriptor destinationIcon;
+  late BitmapDescriptor sourceIcon;
+  late BitmapDescriptor destinationIcon;
 // the user's initial location and current location
 // as it moves
-  Position currentLocation;
+  late Position currentLocation;
 // a reference to the destination location
-  Position destinationLocation;
+  late Position destinationLocation;
 // wrapper around the location API
-  double pinPillPosition = -100;
+  late AnimationController controller;
+  bool _showDetails = true;
+// enabling disabling show details; 
+  bool _isExpand = false;
   @override
   void initState() {
     super.initState();
@@ -50,8 +54,8 @@ class RideRequestState extends State<RideRequestPage> {
     destinationDetail = _notificationData.toLocation;
     polylinePoints = PolylinePoints();
     currentLocation = Position.fromMap({
-      "latitude": sourceDetail.geometry.location.lat,
-      "longitude": sourceDetail.geometry.location.lng
+      "latitude": sourceDetail.geometry!.location.lat,
+      "longitude": sourceDetail.geometry!.location.lng
     });
     // subscribe to changes in the user's location
     // by "listening" to the location's onLocationChanged event
@@ -67,6 +71,15 @@ class RideRequestState extends State<RideRequestPage> {
     // set the initial location
     setInitialLocation();
     _getPolyline();
+
+     super.initState();
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..addListener(() {
+        setState(() {});
+      });
+    controller.repeat(reverse: true);
   }
 
   void setSourceAndDestinationIcons() async {
@@ -85,8 +98,8 @@ class RideRequestState extends State<RideRequestPage> {
 
   void setInitialLocation() async {
     destinationLocation = Position.fromMap({
-      "latitude": destinationDetail.geometry.location.lat,
-      "longitude": destinationDetail.geometry.location.lng
+      "latitude": destinationDetail.geometry!.location.lat,
+      "longitude": destinationDetail.geometry!.location.lng
     });
   }
 
@@ -94,21 +107,21 @@ class RideRequestState extends State<RideRequestPage> {
   Widget build(BuildContext context) {
     CameraPosition initialCameraPosition = CameraPosition(
         target: LatLng(
-            (sourceDetail.geometry.location.lat +
-                    destinationDetail.geometry.location.lat) /
+            (sourceDetail.geometry!.location.lat +
+                    destinationDetail.geometry!.location.lat) /
                 2,
-            (sourceDetail.geometry.location.lng +
-                    destinationDetail.geometry.location.lng) /
+            (sourceDetail.geometry!.location.lng +
+                    destinationDetail.geometry!.location.lng) /
                 2),
         zoom: ZoomCalculate().getZoom(
-            sourceDetail.geometry.location.lat,
-            sourceDetail.geometry.location.lng,
-            destinationDetail.geometry.location.lat,
-            destinationDetail.geometry.location.lng),
+            sourceDetail.geometry!.location.lat,
+            sourceDetail.geometry!.location.lng,
+            destinationDetail.geometry!.location.lat,
+            destinationDetail.geometry!.location.lng),
         tilt: CAMERA_TILT,
         bearing: CAMERA_BEARING);
-
-    return Scaffold(
+        
+    return Scaffold( 
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -119,12 +132,7 @@ class RideRequestState extends State<RideRequestPage> {
               markers: _markers,
               polylines: Set<Polyline>.of(polylines.values),
               mapType: MapType.normal,
-              initialCameraPosition: initialCameraPosition,
-              onTap: (LatLng loc) {
-                setState(() {
-                  pinPillPosition = -100;
-                });
-              },
+              initialCameraPosition: initialCameraPosition,             
               onMapCreated: (GoogleMapController controller) {
                 //controller.setMapStyle(Utils.mapStyles);
                 _controller.complete(controller);
@@ -147,25 +155,16 @@ class RideRequestState extends State<RideRequestPage> {
           ), */
           //make future loader here if distance and time response is not
           // coming from firebase nitifiation
-          MapPinPillComponent(
-            data: _notificationData,
-          )
+          if(_showDetails)
+          _mapPinPillComponent(
+          ),
+          //Future.delayed(Duration.zero, ()=> showRequestBox())
         ],
       ),
     );
   }
 
-  void showRequestBox() async {
-    bool result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => MapPinPillComponent(
-          data: _notificationData,
-        ),
-      ),
-    );
-    if (!result) Navigator.pop(context);
-  }
+ 
 
   void showPinsOnMap() {
     var pinPosition =
@@ -235,15 +234,205 @@ class RideRequestState extends State<RideRequestPage> {
   Future<String> getDistance() async {
     var distanceResponse =
         await distance.GoogleDistanceMatrix(apiKey: googleAPIKey)
-            .distanceWithLocation([sourceDetail.geometry.location],
-                [destinationDetail.geometry.location]);
+            .distanceWithLocation([sourceDetail.geometry!.location],
+                [destinationDetail.geometry!.location]);
     if (distanceResponse != null)
-      return distanceResponse.results.first.elements.first.distance.text;
+      return distanceResponse.rows.first.elements.first.distance.text;
     else
       return '';
   }
-}
 
+ Widget _mapPinPillComponent() {
+    var width = MediaQuery.of(context).size.width;
+    Future.delayed(
+        const Duration(seconds: 100), () => {Navigator.pop(context)});
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Card(
+        color: cardColor,
+        shape: RoundedRectangleBorder(
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(50.0),
+                topRight: Radius.circular(50.0))),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Column(
+              children: [
+                IconButton(
+                    padding: EdgeInsets.all(0),
+                    icon: _isExpand
+                        ? Icon(Icons.keyboard_arrow_up)
+                        : Icon(Icons.keyboard_arrow_down),
+                    onPressed: () {
+                      setState(() {
+                        _isExpand = !_isExpand;
+                      });
+                    }),
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
+                  child: Text(
+                    'You got a ride request',
+                    style: title,
+                  ),
+                )
+              ],
+            ),
+            LinearProgressIndicator(
+              value: controller.value,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
+            ),
+            _isExpand
+                ? _acceptButton()
+                : Container(
+                    color: Colors.white,
+                    width: width,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CircleAvatar(
+                                child: Icon(Icons.person, size: 30),
+                                foregroundColor: Colors.grey[300],
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Pyari Suntali'),
+                                Text('Damak, Jhapa')
+                              ],
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Divider(height: 3, color: Colors.black45),
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.person_pin_circle),
+                            Expanded(
+                                child: Text(
+                                    _notificationData.fromLocation.formattedAddress!))
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.pin_drop),
+                            Expanded(
+                                child: Text(
+                                    _notificationData.toLocation.formattedAddress!))
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Divider(height: 3, color: Colors.black45),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Spacer(flex: 1),
+                            Flexible(
+                              flex: 10,
+                              child: Column(
+                                children: [
+                                  Text('Distance'),
+                                  Text(
+                                    _notificationData.distance,
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 20),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              height: 30,
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                            Column(
+                              children: [
+                                Text('Fare'),
+                                Text(
+                                  'Rs 100',
+                                  style: TextStyle(
+                                      color: Colors.red, fontSize: 20),
+                                )
+                              ],
+                            ),
+                            Spacer(
+                              flex: 1,
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Divider(height: 3, color: Colors.black45),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Spacer(flex: 4),
+                            Icon(Icons.call),
+                            //Spacer(flex: 1),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                'Support',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Spacer(flex: 1),
+                            Container(
+                              height: 20,
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                            Spacer(flex: 1),
+                            TextButton(
+                              onPressed: () {
+                                _showDetails = false;
+                                controller.stop();
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                'Reject',
+                                style:
+                                    TextStyle(color: Colors.red, fontSize: 20),
+                              ),
+                            ),
+                            Spacer(
+                              flex: 4,
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Divider(height: 3, color: Colors.black45),
+                        ),
+                        _acceptButton()
+                      ],
+                    ),
+                  )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _acceptButton() {
+    return ElevatedButton(
+      onPressed: () => setState((){_showDetails = false;controller.stop();}),
+      child: Text('Accept rideon_driver request'),
+    );
+  }
+
+}
+/* 
 class MapPinPillComponent extends StatefulWidget {
   final NotificationData data;
   MapPinPillComponent({this.data});
@@ -264,13 +453,13 @@ class _MapPinPillComponentState extends State<MapPinPillComponent>
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration: const Duration(seconds: 3),
     )..addListener(() {
         setState(() {});
       });
     controller.repeat(reverse: true);
 
-   /*  controller =
+    /*  controller =
         AnimationController(duration: const Duration(seconds: 2), vsync: this);
     animation = Tween(begin: 0.0, end: 20.0).animate(controller)
       ..addListener(() {
@@ -290,7 +479,7 @@ class _MapPinPillComponentState extends State<MapPinPillComponent>
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     Future.delayed(
-        const Duration(seconds: 100), () => {Navigator.pop(context, false)});
+        const Duration(seconds: 100), () => {Navigator.pop(context)});
     return Align(
       alignment: Alignment.bottomCenter,
       child: Card(
@@ -467,8 +656,24 @@ class _MapPinPillComponentState extends State<MapPinPillComponent>
 
   Widget _acceptButton() {
     return ElevatedButton(
-      onPressed: () => {Navigator.pop(context, true)},
+      onPressed: () => setState((){RideRequestPage.showDetail = false;}),
       child: Text('Accept rideon_driver request'),
     );
   }
 }
+
+ void showRequestBox() async {
+    bool result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MapPinPillComponent(
+          data: _notificationData,
+        ),
+      ),
+    );
+    if (!result)
+      Navigator.pop(context);
+    else
+      print("not navigated");
+  }
+ */

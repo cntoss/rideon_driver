@@ -45,7 +45,7 @@ class ForgotPassword extends StatelessWidget {
                         "To recover your password, you'll need to confirm your phone number.",
                         style: Theme.of(context)
                             .textTheme
-                            .headline6
+                            .headline6!
                             .copyWith(fontSize: 16),
                         textAlign: TextAlign.center,
                       ),
@@ -67,7 +67,7 @@ class ForgotPassword extends StatelessWidget {
 
 class _RecoveryNumberWidget extends StatefulWidget {
   _RecoveryNumberWidget({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -114,7 +114,7 @@ class __RecoveryNumberWidgetState extends State<_RecoveryNumberWidget> {
                   helperText: "You'll be informed after verification.",
                   hintStyle: Theme.of(context)
                       .textTheme
-                      .headline6
+                      .headline6!
                       .copyWith(color: textColor),
                   border: InputBorder.none,
                   hintText: "Enter your Phone no.",
@@ -176,7 +176,7 @@ class __RecoveryNumberWidgetState extends State<_RecoveryNumberWidget> {
     );
   }
 
-  Widget box({Widget child}) {
+  Widget box({Widget? child}) {
     return SizedBox(
       key: UniqueKey(),
       width: 90,

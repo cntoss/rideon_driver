@@ -76,7 +76,7 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  customRow({Icon icon, String title, String subtitle}) {
+  customRow({required Icon icon, required String title, String? subtitle}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
@@ -98,7 +98,7 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  customCard({Widget child}) {
+  customCard({required Widget child}) {
     return Card(
         color: cardColor,
         elevation: 1,
@@ -113,8 +113,8 @@ class _SettingScreenState extends State<SettingScreen> {
 
 class ProfileBox extends StatelessWidget {
   const ProfileBox({
-    Key key,
-    @required this.user,
+    Key? key,
+    required this.user,
   }) : super(key: key);
 
   final User user;
@@ -136,9 +136,9 @@ class ProfileBox extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 3.5,
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-                child: user.image.isNullOrEmpty()
+                child: user.image == null
                     ? Image.asset('assets/logo_mini.png')
-                    : NetworkImage(user.image),
+                    : NetworkImage(user.image!) as Widget,
               ),
             ),
             Container(

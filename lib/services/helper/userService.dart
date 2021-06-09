@@ -8,7 +8,7 @@ import 'package:rideon_driver/services/helper/hiveService.dart';
 class UserService {
   Box _box = HiveService().getHiveBox();
 
-  void addUser({@required User user}) {
+  void addUser({required User user}) {
     _box.put(hkUser, user);
     //todo: update after mobile number verify
     setLogin(setLoginTo: true);
@@ -17,7 +17,7 @@ class UserService {
   void removeUser() {
     setLogin(setLoginTo: false);
     Navigator.pushAndRemoveUntil(
-        AppConfig.navigatorKey.currentState.overlay.context,
+        AppConfig.navigatorKey.currentState!.overlay!.context,
         MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
         (Route<dynamic> route) => false);
 
@@ -35,7 +35,7 @@ class UserService {
   }
  */
   User getUser() {
-    return _box.get(hkUser, defaultValue: User(id: null));
+    return _box.get(hkUser, defaultValue: User(id: 0, gender: 'male', name: 'test', phone: '9812345678'));
   }
 
   void setLogin({bool setLoginTo = false}) {

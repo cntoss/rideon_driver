@@ -5,11 +5,10 @@ import 'package:rideon_driver/models/user/userModel.dart';
 import 'package:rideon_driver/screens/profile/addFIle.dart';
 import 'package:rideon_driver/screens/profile/changePasswordScreen.dart';
 import 'package:rideon_driver/screens/profile/profileEditScreen.dart';
-import 'package:rideon_driver/services/utils/extension.dart';
 
 class ProfileScreen extends StatefulWidget {
   final User user;
-  ProfileScreen({this.user, Key key}) : super(key: key);
+  ProfileScreen({required this.user, Key? key}) : super(key: key);
   @override
   _ProfileScreenState createState() => _ProfileScreenState(this.user);
 }
@@ -134,8 +133,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 class ProfileBox extends StatelessWidget {
   const ProfileBox({
-    Key key,
-    @required this.user,
+    Key? key,
+    required this.user,
   }) : super(key: key);
 
   final User user;
@@ -164,9 +163,9 @@ class ProfileBox extends StatelessWidget {
                 width: MediaQuery.of(context).size.width / 3.5,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8.0),
-                  child: user.image.isNullOrEmpty()
+                  child: user.image == null
                       ? Image.asset('assets/logo_mini.png')
-                      : NetworkImage(user.image),
+                      : NetworkImage(user.image!) as Widget,//v2
                 ),
               ),
               Container(

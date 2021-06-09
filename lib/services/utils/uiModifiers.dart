@@ -15,7 +15,7 @@ class WidgetToSliverBuilder extends StatefulWidget
   final Widget child;
   final width;
 
-  const WidgetToSliverBuilder({Key key, this.child, this.width})
+  const WidgetToSliverBuilder({Key? key, required this.child, this.width})
       : super(key: key);
 
   @override

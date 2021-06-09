@@ -15,14 +15,14 @@ class AddFileScreen extends StatefulWidget {
 }
 
 class _AddFileScreenState extends State<AddFileScreen> {
-  PickedFile _imageFile;
+  PickedFile? _imageFile;
   dynamic _pickImageError;
-  String _retrieveDataError;
+  String? _retrieveDataError;
   bool _isAlert = false;
   bool _isPreview = false;
   final ImagePicker _picker = ImagePicker();
 
-  void _onImageButtonPressed(ImageSource source, {BuildContext context}) async {
+  void _onImageButtonPressed(ImageSource source, {BuildContext? context}) async {
     try {
       final pickedFile = await _picker.getImage(
         source: source,
@@ -43,14 +43,14 @@ class _AddFileScreenState extends State<AddFileScreen> {
   }
 
   Widget _previewImage() {
-    final Text retrieveError = _getRetrieveErrorWidget();
+    final Text? retrieveError = _getRetrieveErrorWidget();
     if (retrieveError != null) {
       return retrieveError;
     }
     if (_imageFile != null) {
       return Semantics(
           child: Image.file(
-            File(_imageFile.path),
+            File(_imageFile!.path),
             fit: BoxFit.cover,
             height: MediaQuery.of(context).size.height / 1.31,
             width: MediaQuery.of(context).size.width,
@@ -79,7 +79,7 @@ class _AddFileScreenState extends State<AddFileScreen> {
         _imageFile = response.file;
       });
     } else {
-      _retrieveDataError = response.exception.code;
+      _retrieveDataError = response.exception!.code;
     }
   }
 
@@ -95,12 +95,12 @@ class _AddFileScreenState extends State<AddFileScreen> {
               if (widget.document.subtitle != null)
                 Padding(
                   padding: const EdgeInsets.all(15.0),
-                  child: Text(widget.document.subtitle, style: subTitle),
+                  child: Text(widget.document.subtitle!, style: subTitle),
                 ),
               if (widget.document.detail != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Text(widget.document.detail),
+                  child: Text(widget.document.detail!),
                 ),
               Padding(
                 padding: const EdgeInsets.all(15.0),
@@ -181,9 +181,9 @@ class _AddFileScreenState extends State<AddFileScreen> {
     );
   }
 
-  Text _getRetrieveErrorWidget() {
+  Text? _getRetrieveErrorWidget() {
     if (_retrieveDataError != null) {
-      final Text result = Text(_retrieveDataError);
+      final Text result = Text(_retrieveDataError!);
       _retrieveDataError = null;
       return result;
     }

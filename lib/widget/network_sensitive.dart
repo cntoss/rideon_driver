@@ -8,7 +8,7 @@ class NetworkSensitive extends StatelessWidget {
   final Widget child;
 
   NetworkSensitive({
-    this.child,
+    required this.child,
   });
 
   @override

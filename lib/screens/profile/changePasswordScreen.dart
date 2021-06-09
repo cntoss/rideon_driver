@@ -38,8 +38,9 @@ class _ChnagePasswordScreenState extends State<ChangePasswordScreen> {
     FocusScope.of(context).requestFocus(nextFocus);
   }
 
-  String _validatePin(String value, {bool isConfirmPin}) {
-    if (value.length < 6 || value.isEmpty) {
+  String? _validatePin(String? value, {bool? isConfirmPin}) {
+    if(value == null) return 'Enter at least 6 character password';
+    else if (value.length < 6 || value.isEmpty) {
       return 'Enter at least 6 character password';
     } else if (_oldPinController.text == _newPinController.text) {
       return 'Old password and New password must be different';
@@ -54,8 +55,11 @@ class _ChnagePasswordScreenState extends State<ChangePasswordScreen> {
     }
   }
 
-  String _validateOldPin(String value) {
-    if (value.length < 6 || value.isEmpty) {
+  String? _validateOldPin(String? value) {
+    if(value == null) {
+      return 'Enter at least 6 character password';
+    }
+    else if (value.length < 6) {
       return 'Enter at least 6 character password';
     } else {
       return null;
@@ -213,7 +217,7 @@ class _ChnagePasswordScreenState extends State<ChangePasswordScreen> {
                         onPressed: _isLoading
                             ? null
                             : () {
-                                if (_pinChangeFormKey.currentState.validate()) {
+                                if (_pinChangeFormKey.currentState!.validate()) {
                                   FocusScope.of(context).unfocus();
                                   setState(() {
                                     _isLoading = true;

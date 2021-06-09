@@ -30,22 +30,22 @@ class SavedAddressModel extends HiveObject {
   });
 
   @HiveField(0)
-  String id;
+  String? id;
 
   @HiveField(1)
-  AddressType type;
+  AddressType? type;
 
   @HiveField(2)
-  String placeId;
+  String? placeId;
 
   @HiveField(3)
-  LnModel location;
+  LnModel? location;
 
   @HiveField(4)
-  String locationName;
+  String? locationName;
 
    @HiveField(5)
-  String detail;
+  String? detail;
 
   factory SavedAddressModel.fromJson(Map<String, dynamic> json) =>
       SavedAddressModel(
@@ -58,7 +58,7 @@ class SavedAddressModel extends HiveObject {
 factory SavedAddressModel.fromPickResult(PickResult result) {
     return SavedAddressModel(
       placeId: result.placeId,
-      location: LnModel.fromGeomerty(result.geometry.location.lat,result.geometry.location.lng),
+      location: LnModel.fromGeomerty(result.geometry!.location.lat,result.geometry!.location.lng),
       locationName: result.formattedAddress,
       //types: result.types,
       //adrAddress: result.adrAddress,
@@ -77,8 +77,8 @@ factory SavedAddressModel.fromPickResult(PickResult result) {
 @HiveType(typeId: htlnModel)
 class LnModel extends HiveObject {
   LnModel({
-    this.lat,
-    this.lng,
+    required this.lat,
+    required this.lng,
   });
   @HiveField(0)
   double lat;

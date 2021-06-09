@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 class ErrorEmptyWidget extends StatelessWidget {
   final String message;
-  final VoidCallback onPressed;
-  ErrorEmptyWidget({@required this.message, this.onPressed});
+  final VoidCallback? onPressed;
+  ErrorEmptyWidget({required this.message, this.onPressed});
   @override
   Widget build(BuildContext context) {
     return Column(
