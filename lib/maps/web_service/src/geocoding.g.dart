@@ -9,7 +9,7 @@ part of 'geocoding.dart';
 GeocodingResponse _$GeocodingResponseFromJson(Map<String, dynamic> json) {
   return GeocodingResponse(
     status: json['status'] as String,
-    errorMessage: json['errorMessage'] as String?,
+    errorMessage: json['error_message'] as String?,
     results: (json['results'] as List<dynamic>?)
             ?.map((e) => GeocodingResult.fromJson(e as Map<String, dynamic>))
             .toList() ??
@@ -20,39 +20,38 @@ GeocodingResponse _$GeocodingResponseFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$GeocodingResponseToJson(GeocodingResponse instance) =>
     <String, dynamic>{
       'status': instance.status,
-      'errorMessage': instance.errorMessage,
+      'error_message': instance.errorMessage,
       'results': instance.results,
     };
 
 GeocodingResult _$GeocodingResultFromJson(Map<String, dynamic> json) {
   return GeocodingResult(
     geometry: Geometry.fromJson(json['geometry'] as Map<String, dynamic>),
-    placeId: json['placeId'] as String,
+    placeId: json['place_id'] as String,
     types:
         (json['types'] as List<dynamic>?)?.map((e) => e as String).toList() ??
             [],
-    addressComponents: (json['addressComponents'] as List<dynamic>?)
-            ?.map((e) => AddressComponent.fromJson(e as Map<String, dynamic>))
-            .toList() ??
-        [],
-    postcodeLocalities: (json['postcodeLocalities'] as List<dynamic>?)
+   addressComponents: (json['address_components'] as List<dynamic>)
+            .map((e) => AddressComponent.fromJson(e as Map<String, dynamic>))
+            .toList(),
+    postcodeLocalities: (json['postcode_localities'] as List<dynamic>?)
             ?.map((e) => e as String)
             .toList() ??
         [],
-    partialMatch: json['partialMatch'] as bool? ?? false,
-    formattedAddress: json['formattedAddress'] as String?,
+    partialMatch: json['partial_match'] as bool? ?? false,
+    formattedAddress: json['formatted_address'] as String?,
   );
 }
 
 Map<String, dynamic> _$GeocodingResultToJson(GeocodingResult instance) =>
     <String, dynamic>{
       'types': instance.types,
-      'formattedAddress': instance.formattedAddress,
-      'addressComponents': instance.addressComponents,
-      'postcodeLocalities': instance.postcodeLocalities,
+      'formatted_address': instance.formattedAddress,
+      'address_components': instance.addressComponents,
+      'postcode_localities': instance.postcodeLocalities,
       'geometry': instance.geometry,
-      'partialMatch': instance.partialMatch,
-      'placeId': instance.placeId,
+      'partial_match': instance.partialMatch,
+      'place_id': instance.placeId,
     };
 
 StreetAddress _$StreetAddressFromJson(Map<String, dynamic> json) {
@@ -60,32 +59,32 @@ StreetAddress _$StreetAddressFromJson(Map<String, dynamic> json) {
     geometry: json['geometry'] == null
         ? null
         : Geometry.fromJson(json['geometry'] as Map<String, dynamic>),
-    addressLine: json['addressLine'] as String?,
-    countryName: json['countryName'] as String?,
-    countryCode: json['countryCode'] as String?,
-    featureName: json['featureName'] as String?,
-    postalCode: json['postalCode'] as String?,
-    adminArea: json['adminArea'] as String?,
-    subAdminArea: json['subAdminArea'] as String?,
+    addressLine: json['address_line'] as String?,
+    countryName: json['country_name'] as String?,
+    countryCode: json['country_code'] as String?,
+    featureName: json['feature_name'] as String?,
+    postalCode: json['postal_code'] as String?,
+    adminArea: json['admin_area'] as String?,
+    subAdminArea: json['sub_admin_area'] as String?,
     locality: json['locality'] as String?,
-    subLocality: json['subLocality'] as String?,
+    subLocality: json['sub_locality'] as String?,
     thoroughfare: json['thoroughfare'] as String?,
-    subThoroughfare: json['subThoroughfare'] as String?,
+    subThoroughfare: json['sub_thoroughfare'] as String?,
   );
 }
 
 Map<String, dynamic> _$StreetAddressToJson(StreetAddress instance) =>
     <String, dynamic>{
       'geometry': instance.geometry,
-      'addressLine': instance.addressLine,
-      'countryName': instance.countryName,
-      'countryCode': instance.countryCode,
-      'featureName': instance.featureName,
-      'postalCode': instance.postalCode,
-      'adminArea': instance.adminArea,
-      'subAdminArea': instance.subAdminArea,
+      'address_line': instance.addressLine,
+      'country_name': instance.countryName,
+      'country_code': instance.countryCode,
+      'feature_name': instance.featureName,
+      'postal_code': instance.postalCode,
+      'admin_area': instance.adminArea,
+      'sub_admin_area': instance.subAdminArea,
       'locality': instance.locality,
-      'subLocality': instance.subLocality,
+      'sub_locality': instance.subLocality,
       'thoroughfare': instance.thoroughfare,
-      'subThoroughfare': instance.subThoroughfare,
+      'sub_thoroughfare': instance.subThoroughfare,
     };
